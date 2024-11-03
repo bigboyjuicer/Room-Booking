@@ -4,11 +4,13 @@ import api.entity.Room;
 import api.service.RoomService;
 import api.util.Response;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/rooms")
@@ -26,22 +28,22 @@ public class RoomController {
         Map<String, Object> data = new HashMap<>() {{
             put("rooms", rooms);
         }};
-        return new Response(true, "Got all rooms successfully", data);
+        return new Response(true, "Got all rooms successfully", data, null);
     }
 
     @PostMapping()
-    public Response addRoom(@RequestBody Room room) {
+    public Response addRoom(@Valid @RequestBody Room room) {
         Room newRoom = roomService.saveOrUpdateRoom(room);
         Map<String, Object> data = new HashMap<>() {{
             put("room", newRoom);
         }};
-        return new Response(true, "Room added successfully", data);
+        return new Response(true, "Room added successfully", data, null);
     }
 
-    @DeleteMapping()
-    public Response deleteRoom(@RequestBody int id) {
+    @DeleteMapping("/{id}")
+    public Response deleteRoom(@PathVariable int id) {
         roomService.deleteRoom(id);
-        return new Response(true, "Room deleted successfully", null);
+        return new Response(true, "Room deleted successfully", null, null);
     }
 
     @GetMapping("/{id}")
@@ -50,20 +52,35 @@ public class RoomController {
         Map<String, Object> data = new HashMap<>() {{
             put("room", room);
         }};
-        return new Response(true, "Room found successfully", data);
+        return new Response(true, "Room found successfully", data, null);
     }
 
     @PutMapping("/{id}")
-    public Response updateRoom(@RequestBody Room room) {
+    public Response updateRoom(@Valid @RequestBody Room room, @PathVariable int id) {
+        room.setId(id);
         Room updatedRoom = roomService.saveOrUpdateRoom(room);
         Map<String, Object> data = new HashMap<>() {{
             put("room", updatedRoom);
         }};
-        return new Response(true, "Room updated successfully", data);
+        return new Response(true, "Room updated successfully", data, null);
     }
 
-    @ExceptionHandler
-    public Response handleException(Exception ex) {
-        return new Response(false, ex.getMessage(), null);
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Response handleValidationException(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            FieldError fieldError = (FieldError) error;
+            String fieldName = fieldError.getField();
+            errors.put(fieldName, error.getDefaultMessage());
+        });
+        return new Response(false, "Validation error occurred", null, errors);
     }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Response handleInvalidFormatException(Exception ex) {
+        return new Response(false, ex.getMessage(), null, null);
+    }
+
 }

@@ -7,11 +7,13 @@ public class Response {
     private Boolean success;
     private String message;
     private Map<String, Object> data;
+    private Map<String, String> errors;
 
-    public Response(Boolean success, String message, Map<String, Object> data) {
+    public Response(Boolean success, String message, Map<String, Object> data, Map<String, String> errors) {
         this.success = success;
         this.message = message;
         this.data = data;
+        this.errors = errors;
     }
 
     public Boolean getSuccess() {
@@ -36,5 +38,13 @@ public class Response {
 
     public void setData(Map<String, Object> data) {
         this.data = data;
+    }
+
+    public Map<String, String> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(Map<String, String> errors) {
+        this.errors = errors;
     }
 }
