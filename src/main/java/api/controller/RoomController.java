@@ -7,8 +7,6 @@ import api.util.Response;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -42,13 +40,13 @@ public class RoomController {
         Map<String, Object> data = new HashMap<>() {{
             put("room", newRoom);
         }};
-        return new Response(true, "Room added successfully", data, null);
+        return new Response(true, "Room successfully added", data, null);
     }
 
     @DeleteMapping("/{id}")
     public Response deleteRoom(@PathVariable int id) {
         roomService.deleteRoom(id);
-        return new Response(true, "Room deleted successfully", null, null);
+        return new Response(true, "Room successfully deleted", null, null);
     }
 
     @GetMapping("/{id}")
@@ -57,7 +55,7 @@ public class RoomController {
         Map<String, Object> data = new HashMap<>() {{
             put("room", room);
         }};
-        return new Response(true, "Room found successfully", data, null);
+        return new Response(true, "Room successfully found", data, null);
     }
 
     @PutMapping("/{id}")
@@ -67,31 +65,13 @@ public class RoomController {
         Map<String, Object> data = new HashMap<>() {{
             put("room", updatedRoom);
         }};
-        return new Response(true, "Room updated successfully", data, null);
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Response handleValidationException(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            FieldError fieldError = (FieldError) error;
-            String fieldName = fieldError.getField();
-            errors.put(fieldName, error.getDefaultMessage());
-        });
-        return new Response(false, "Validation error occurred", null, errors);
+        return new Response(true, "Room successfully updated", data, null);
     }
 
     @ExceptionHandler(RoomNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response handleRoomNotFoundException(RoomNotFoundException ex) {
         return new Response(false, ex.getMessage(), null, new HashMap<>() {{put("id", "Not found");}});
-    }
-
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Response handleInvalidFormatException(Exception ex) {
-        return new Response(false, ex.getMessage(), null, null);
     }
 
 }

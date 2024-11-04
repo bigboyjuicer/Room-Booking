@@ -26,7 +26,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
-    public Room getRoomById(int id) throws RoomNotFoundException {
+    public Room getRoomById(int id) {
         if (roomRepository.findById(id).isPresent()) {
             return roomRepository.findById(id).get();
         } else {

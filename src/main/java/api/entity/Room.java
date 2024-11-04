@@ -38,27 +38,28 @@ public class Room {
         this.id = id;
     }
 
+    @Min(value = 1, message = "Cannot be less than 1")
     public int getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
+    public void setCapacity(@Min(value = 1, message = "Cannot be less than 1") int capacity) {
         this.capacity = capacity;
     }
 
-    public Time getOpenTime() {
+    public @NotNull(message = "Cannot be null") Time getOpenTime() {
         return openTime;
     }
 
-    public void setOpenTime(Time openTime) {
+    public void setOpenTime(@NotNull(message = "Cannot be null") Time openTime) {
         this.openTime = openTime;
     }
 
-    public Time getCloseTime() {
+    public @NotNull(message = "Cannot be null") Time getCloseTime() {
         return closeTime;
     }
 
-    public void setCloseTime(Time closeTime) {
+    public void setCloseTime(@NotNull(message = "Cannot be null") Time closeTime) {
         this.closeTime = closeTime;
     }
 
