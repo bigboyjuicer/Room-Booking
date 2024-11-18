@@ -1,20 +1,18 @@
 package api.entity;
 
 import api.util.annotation.ValidEmail;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 @Entity
-@Table(name = "account")
+@Table(name = "users")
 public class User {
-
-    /*@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;*/
-
     @Id
     @NotNull(message = "Cannot be null")
     @NotEmpty(message = "Cannot be empty")
@@ -38,8 +36,33 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    public User() {
-    }
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "section")
+    @NotNull(message = "Cannot be null")
+    private Section section;
+
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "settings")
+    @NotNull(message = "Cannot be null")
+    private Settings settings;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    List<Role> roles;
+
+    @Column(name = "is_account_non_expired")
+    private boolean isAccountNonExpired = true;
+
+    @Column(name = "is_account_non_locked")
+    private boolean isAccountNonLocked = true;
+
+    @Column(name = "is_credentials_non_expired")
+    private boolean isCredentialsNonExpired = true;
+
+    @Column(name = "is_enabled")
+    private boolean isEnabled = true;
 
     public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String getEmail() {
         return email;
@@ -71,5 +94,61 @@ public class User {
 
     public void setPassword(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String password) {
         this.password = password;
+    }
+
+    public @NotNull(message = "Cannot be null") Section getSection() {
+        return section;
+    }
+
+    public void setSection(@NotNull(message = "Cannot be null") Section section) {
+        this.section = section;
+    }
+
+    public @NotNull(message = "Cannot be null") Settings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(@NotNull(message = "Cannot be null") Settings settings) {
+        this.settings = settings;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
+    public boolean isAccountNonExpired() {
+        return isAccountNonExpired;
+    }
+
+    public void setAccountNonExpired(boolean accountNonExpired) {
+        isAccountNonExpired = accountNonExpired;
+    }
+
+    public boolean isAccountNonLocked() {
+        return isAccountNonLocked;
+    }
+
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        isAccountNonLocked = accountNonLocked;
+    }
+
+    public boolean isCredentialsNonExpired() {
+        return isCredentialsNonExpired;
+    }
+
+    public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+        isCredentialsNonExpired = credentialsNonExpired;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 }

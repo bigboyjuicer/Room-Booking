@@ -1,10 +1,12 @@
 package api.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
-import java.sql.Time;
+import java.util.List;
 
 @Entity
 @Table(name = "rooms")
@@ -20,15 +22,15 @@ public class Room {
     private int capacity;
 
     @NotNull(message = "Cannot be null")
-    @Column(name = "open_time")
-    private Time openTime;
+    @Column(name = "name")
+    private String name;
 
-    @NotNull(message = "Cannot be null")
-    @Column(name = "close_time")
-    private Time closeTime;
+    @Column(name = "is_active")
+    private boolean isActive = true;
 
-    public Room() {
-    }
+    @JsonManagedReference
+    @OneToMany(mappedBy = "room", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    List<Weekday> weekdays;
 
     public int getId() {
         return id;
@@ -47,29 +49,27 @@ public class Room {
         this.capacity = capacity;
     }
 
-    public @NotNull(message = "Cannot be null") Time getOpenTime() {
-        return openTime;
+    public @NotNull(message = "Cannot be null") String getName() {
+        return name;
     }
 
-    public void setOpenTime(@NotNull(message = "Cannot be null") Time openTime) {
-        this.openTime = openTime;
+    public void setName(@NotNull(message = "Cannot be null") String name) {
+        this.name = name;
     }
 
-    public @NotNull(message = "Cannot be null") Time getCloseTime() {
-        return closeTime;
+    public boolean isActive() {
+        return isActive;
     }
 
-    public void setCloseTime(@NotNull(message = "Cannot be null") Time closeTime) {
-        this.closeTime = closeTime;
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
-    @Override
-    public String toString() {
-        return "Room{" +
-                "id=" + id +
-                ", capacity=" + capacity +
-                ", openTime=" + openTime +
-                ", closeTime=" + closeTime +
-                '}';
+    public List<Weekday> getWeekdays() {
+        return weekdays;
+    }
+
+    public void setWeekdays(List<Weekday> weekdays) {
+        this.weekdays = weekdays;
     }
 }

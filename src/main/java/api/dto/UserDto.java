@@ -1,11 +1,13 @@
 package api.dto;
 
+import api.entity.Section;
+import api.entity.Settings;
 import api.util.annotation.ValidEmail;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class UserDTO {
+public class UserDto {
 
     @NotNull(message = "Cannot be null")
     @NotEmpty(message = "Cannot be empty")
@@ -21,10 +23,16 @@ public class UserDTO {
     @NotEmpty(message = "Cannot be empty")
     private String lastName;
 
+    @NotNull(message = "Cannot be null")
+    private Section section;
+
+    @NotNull(message = "Cannot be null")
+    private Settings settings;
+
     @NotEmpty(message = "Cannot be empty")
     private String image;
 
-    public UserDTO(String email, String firstName, String lastName, String image) {
+    public UserDto(String email, String firstName, String lastName, String image) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;

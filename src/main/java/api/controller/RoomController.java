@@ -7,6 +7,7 @@ import api.util.Response;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -35,6 +36,7 @@ public class RoomController {
     }
 
     @PostMapping()
+    @Secured("ADMIN")
     public Response addRoom(@Valid @RequestBody Room room) {
         Room newRoom = roomService.saveRoom(room);
         Map<String, Object> data = new HashMap<>() {{
@@ -44,6 +46,7 @@ public class RoomController {
     }
 
     @DeleteMapping("/{id}")
+    @Secured("ADMIN")
     public Response deleteRoom(@PathVariable int id) {
         roomService.deleteRoom(id);
         return new Response(true, "Room successfully deleted", null, null);
@@ -59,6 +62,7 @@ public class RoomController {
     }
 
     @PutMapping("/{id}")
+    @Secured("ADMIN")
     public Response updateRoom(@Valid @RequestBody Room room, @PathVariable int id) {
         room.setId(id);
         Room updatedRoom = roomService.updateRoom(room);
