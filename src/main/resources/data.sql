@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS weekdays(
 CREATE TABLE IF NOT EXISTS sections(
     id serial primary key,
     name varchar(255) not null,
-    short_name varchar(255) not null
+    short_name varchar(255) not null,
+    UNIQUE(name)
 );
 
 CREATE TABLE IF NOT EXISTS settings(
@@ -29,10 +30,10 @@ CREATE TABLE IF NOT EXISTS settings(
 );
 
 CREATE TABLE IF NOT EXISTS users(
-    email varchar(50) primary key,
-    first_name varchar(50) not null,
-    last_name varchar(50) not null,
-    password varchar(50) not null,
+    email varchar(255) primary key,
+    first_name varchar(255) not null,
+    last_name varchar(255) not null,
+    password varchar(255) not null,
     section serial not null,
     is_account_non_expired	boolean not null default(true),
     is_account_non_locked boolean not null default(true),

@@ -18,9 +18,9 @@ public class Settings {
     @Column(name = "theme")
     private String theme;
 
-    @JsonManagedReference
+    /*@JsonManagedReference
     @OneToMany(mappedBy = "settings", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    List<User> users;
+    List<User> users;*/
 
     public int getId() {
         return id;

@@ -23,9 +23,9 @@ public class Section {
     @Column(name = "short_name")
     private String shortName;
 
-    @JsonManagedReference
+    /*@JsonManagedReference
     @OneToMany(mappedBy = "section", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    List<User> users;
+    List<User> users;*/
 
     public int getId() {
         return id;
@@ -51,11 +51,4 @@ public class Section {
         this.shortName = shortName;
     }
 
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
 }

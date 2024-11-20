@@ -63,6 +63,22 @@ public class UserDto {
         this.lastName = lastName;
     }
 
+    public @NotNull(message = "Cannot be null") Section getSection() {
+        return section;
+    }
+
+    public void setSection(@NotNull(message = "Cannot be null") Section section) {
+        this.section = section;
+    }
+
+    public @NotNull(message = "Cannot be null") Settings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(@NotNull(message = "Cannot be null") Settings settings) {
+        this.settings = settings;
+    }
+
     public @NotEmpty(message = "Cannot be empty") String getImage() {
         return image;
     }

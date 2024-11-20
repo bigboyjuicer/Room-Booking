@@ -1,4 +1,4 @@
-package api.util;
+package api.util.mapper;
 
 import api.dto.UserDto;
 import api.entity.User;
