@@ -54,6 +54,16 @@ CREATE TABLE IF NOT EXISTS authorities(
     CONSTRAINT email_fk FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS refresh_tokens(
+     id serial primary key,
+     email serial not null,
+     refresh_token varchar(255) not null,
+
+     UNIQUE(email),
+     UNIQUE(refresh_token),
+     CONSTRAINT email_fk FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
+);
+
 CREATE OR REPLACE FUNCTION add_authority() RETURNS TRIGGER AS '
     BEGIN
         INSERT INTO authorities (email, authority) VALUES (NEW.email, ''USER'');

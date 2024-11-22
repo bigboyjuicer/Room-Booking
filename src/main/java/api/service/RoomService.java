@@ -1,7 +1,6 @@
 package api.service;
 
 import api.entity.Room;
-import api.util.exception.RoomNotFoundException;
 
 import java.util.List;
 

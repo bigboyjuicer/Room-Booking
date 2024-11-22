@@ -1,7 +1,6 @@
 package api.util.mapper;
 
 import api.dto.LoginUserDto;
-import api.dto.RegisterUserDto;
 import api.entity.User;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;

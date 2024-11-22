@@ -1,7 +1,5 @@
 package api.config;
 
-import api.repository.UserRepository;
-import api.util.exception.UserNotFoundException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
