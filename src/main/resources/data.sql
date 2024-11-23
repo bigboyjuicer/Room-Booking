@@ -2,12 +2,15 @@ CREATE TABLE IF NOT EXISTS rooms(
     id serial PRIMARY KEY,
     capacity int not null,
     name varchar(255) not null,
-    is_active boolean not null default(true)
+    is_active boolean not null default(true),
+    image_data bytea,
+    image_name varchar(255),
+    image_type varchar(255)
 );
 
 CREATE TABLE IF NOT EXISTS weekdays(
     id serial primary key,
-    day varchar(255) not null,
+    day integer not null,
     is_active boolean not null default(true),
     start_time time not null,
     end_time time not null,

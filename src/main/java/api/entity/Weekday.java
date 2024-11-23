@@ -1,6 +1,7 @@
 package api.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -8,7 +9,7 @@ import java.sql.Time;
 
 @Entity
 @Table(name = "weekdays")
-public class Weekday {
+public class Weekday implements Comparable<Weekday> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,8 +18,9 @@ public class Weekday {
 
     @NotNull(message = "Cannot be null")
     @Column(name = "day")
-    private String day;
+    private int day;
 
+    @JsonProperty("isActive")
     @NotNull(message = "Cannot be null")
     @Column(name = "is_active")
     private boolean isActive = true;
@@ -45,20 +47,21 @@ public class Weekday {
         this.id = id;
     }
 
-    public @NotNull(message = "Cannot be null") String getDay() {
+    @NotNull(message = "Cannot be null")
+    public int getDay() {
         return day;
     }
 
-    public void setDay(@NotNull(message = "Cannot be null") String day) {
+    public void setDay(@NotNull(message = "Cannot be null") int day) {
         this.day = day;
     }
 
     @NotNull(message = "Cannot be null")
-    public boolean isActive() {
+    public boolean isIsActive() {
         return isActive;
     }
 
-    public void setActive(@NotNull(message = "Cannot be null") boolean active) {
+    public void setIsActive(@NotNull(message = "Cannot be null") boolean active) {
         isActive = active;
     }
 
@@ -76,5 +79,10 @@ public class Weekday {
 
     public void setEndTime(@NotNull(message = "Cannot be null") Time endTime) {
         this.endTime = endTime;
+    }
+
+    @Override
+    public int compareTo(Weekday o) {
+        return Integer.compare(this.getDay(), o.getDay());
     }
 }

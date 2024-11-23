@@ -5,7 +5,10 @@ import api.util.exception.RoomNotFoundException;
 import api.repository.RoomRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -21,26 +24,37 @@ public class RoomServiceImpl implements RoomService {
     @Override
     // TODO: Make Sorting
     public List<Room> getAllRooms() {
-        return roomRepository.findAll();
+        List<Room> rooms = roomRepository.findAll();
+        rooms.forEach(room -> Collections.sort(room.getWeekdays()));
+        return rooms;
     }
 
     @Override
     public Room getRoomById(int id) {
         if (roomRepository.findById(id).isPresent()) {
-            return roomRepository.findById(id).get();
+            Room room = roomRepository.findById(id).get();
+            Collections.sort(room.getWeekdays());
+            return room;
         } else {
             throw new RoomNotFoundException("Room with this id not found");
         }
     }
 
     @Override
-    public Room saveRoom(Room room) {
-        return roomRepository.save(room);
+    public Room saveRoom(Room room, MultipartFile image) throws IOException {
+        room.setImageData(image.getBytes());
+        room.setImageName(image.getOriginalFilename());
+        room.setImageType(image.getContentType());
+        Room newRoom = roomRepository.save(room);
+        Collections.sort(newRoom.getWeekdays());
+        return newRoom;
     }
 
     @Override
     public Room updateRoom(Room room) {
         if(roomRepository.existsById(room.getId())) {
+            Room updatedRoom = roomRepository.save(room);
+            Collections.sort(updatedRoom.getWeekdays());
             return roomRepository.save(room);
         } else {
             throw new RoomNotFoundException("Room with this id not found");

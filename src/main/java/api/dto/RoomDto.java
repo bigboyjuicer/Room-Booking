@@ -16,4 +16,6 @@ public class RoomDto {
 
     private boolean isActive;
 
+    private String image;
+
 }
