@@ -3,7 +3,9 @@ package api.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.sql.Time;
 
@@ -18,6 +20,8 @@ public class Weekday implements Comparable<Weekday> {
 
     @NotNull(message = "Cannot be null")
     @Column(name = "day")
+    @Positive(message = "Cannot be 0 or negative")
+    @Max(value = 7, message = "Cannot be greater than 7")
     private int day;
 
     @JsonProperty("isActive")

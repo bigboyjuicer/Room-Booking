@@ -2,18 +2,18 @@ package api.util;
 
 import java.util.Map;
 
-public class Response {
+public class MyCustomResponse {
 
     private Boolean success;
     private String message;
     private Map<String, Object> data;
-    private Map<String, String> errors;
+    private Map<String, String> errorsDescription;
 
-    public Response(Boolean success, String message, Map<String, Object> data, Map<String, String> errors) {
+    public MyCustomResponse(Boolean success, String message, Map<String, Object> data, Map<String, String> errorsDescription) {
         this.success = success;
         this.message = message;
         this.data = data;
-        this.errors = errors;
+        this.errorsDescription = errorsDescription;
     }
 
     public Boolean getSuccess() {
@@ -40,11 +40,11 @@ public class Response {
         this.data = data;
     }
 
-    public Map<String, String> getErrors() {
-        return errors;
+    public Map<String, String> getErrorsDescription() {
+        return errorsDescription;
     }
 
-    public void setErrors(Map<String, String> errors) {
-        this.errors = errors;
+    public void setErrorsDescription(Map<String, String> errorsDescription) {
+        this.errorsDescription = errorsDescription;
     }
 }

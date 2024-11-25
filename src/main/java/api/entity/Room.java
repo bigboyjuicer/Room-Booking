@@ -3,6 +3,7 @@ package api.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
@@ -39,6 +40,7 @@ public class Room {
     @Column(name = "image_type")
     private String imageType;
 
+    @Valid
     @JsonManagedReference
     @OneToMany(mappedBy = "room", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Weekday> weekdays;

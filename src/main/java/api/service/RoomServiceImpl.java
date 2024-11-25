@@ -1,6 +1,8 @@
 package api.service;
 
 import api.entity.Room;
+import api.util.comparator.RoomCapacityComparator;
+import api.util.comparator.RoomNameComparator;
 import api.util.exception.RoomNotFoundException;
 import api.repository.RoomRepository;
 import org.springframework.stereotype.Service;
@@ -22,9 +24,16 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    // TODO: Make Sorting
-    public List<Room> getAllRooms() {
+    public List<Room> getAllRooms(String filter) {
         List<Room> rooms = roomRepository.findAll();
+        if(filter != null && !filter.isEmpty()) {
+            switch (filter) {
+                case "capacity_asc" -> rooms.sort(new RoomCapacityComparator());
+                case "capacity_desc" -> rooms.sort(new RoomCapacityComparator().reversed());
+                case "name_asc" -> rooms.sort(new RoomNameComparator());
+                case "name_desc" -> rooms.sort(new RoomNameComparator().reversed());
+            }
+        }
         rooms.forEach(room -> Collections.sort(room.getWeekdays()));
         return rooms;
     }
@@ -41,10 +50,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public Room saveRoom(Room room, MultipartFile image) throws IOException {
-        room.setImageData(image.getBytes());
-        room.setImageName(image.getOriginalFilename());
-        room.setImageType(image.getContentType());
+    public Room saveRoom(Room room){
         Room newRoom = roomRepository.save(room);
         Collections.sort(newRoom.getWeekdays());
         return newRoom;

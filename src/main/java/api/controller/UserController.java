@@ -3,10 +3,11 @@ package api.controller;
 import api.dto.UserDto;
 import api.entity.User;
 import api.service.UserService;
-import api.util.Response;
+import api.util.MyCustomResponse;
 import api.util.mapper.UserMapper;
 import api.util.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -28,46 +29,44 @@ public class UserController {
 
     @GetMapping("/users")
     @Secured("ADMIN")
-    public Response getAllUsers() {
+    public ResponseEntity<MyCustomResponse> getAllUsers() {
         //List<User> users = userService.getAllUsers();
         List<UserDto> users = UserMapper.MAPPER.fromUsers(userService.getAllUsers());
         if (users.isEmpty()) {
-            return new Response(true, "There are no users", null, null);
+            return ResponseEntity.ok().body(new MyCustomResponse(true, "There are no users", null, null));
         } else {
             Map<String, Object> data = new HashMap<>() {{
                 put("users", users);
             }};
-            return new Response(true, "Users successfully found", data, null);
+            return ResponseEntity.ok().body(new MyCustomResponse(true, "Users successfully found", data, null));
         }
     }
 
     @GetMapping("/me")
-    public Response getCurrentUser() {
+    public ResponseEntity<MyCustomResponse> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDto currentUser = UserMapper.MAPPER.fromUser((User) authentication.getPrincipal());
-        return new Response(true, "Successfully got current user", new HashMap<>() {{ put("user", currentUser); }}, null);
+        return ResponseEntity.ok().body(new MyCustomResponse(true, "Successfully got current user", new HashMap<>() {{ put("user", currentUser); }}, null));
     }
 
     @DeleteMapping("/me/delete")
-    public Response deleteUser() {
+    public ResponseEntity<MyCustomResponse> deleteUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) authentication.getPrincipal();
         userService.deleteUser(currentUser.getEmail());
-        return new Response(true, "User successfully deleted", null, null);
+        return ResponseEntity.ok().body(new MyCustomResponse(true, "User successfully deleted", null, null));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Response handleRoomNotFoundException(UserNotFoundException ex) {
-        return new Response(false, ex.getMessage(), null, new HashMap<>() {{
+    public ResponseEntity<MyCustomResponse> handleRoomNotFoundException(UserNotFoundException ex) {
+        return ResponseEntity.badRequest().body(new MyCustomResponse(false, ex.getMessage(), null, new HashMap<>() {{
             put("email", "Not found");
-        }});
+        }}));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public Response handleBadCredentialsException() {
-        return new Response(false, "Invalid email or password", null, null);
+    public ResponseEntity<MyCustomResponse> handleBadCredentialsException() {
+        return new ResponseEntity<>(new MyCustomResponse(false, "Invalid email or password", null, null), HttpStatus.UNAUTHORIZED);
     }
 
 }

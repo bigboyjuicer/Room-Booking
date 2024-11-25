@@ -4,6 +4,7 @@ import api.util.annotation.ValidEmail;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -41,18 +42,21 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
+    @Valid
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "section")
     @NotNull(message = "Cannot be null")
     private Section section;
 
+    @Valid
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "settings")
     @NotNull(message = "Cannot be null")
     private Settings settings;
 
+    @Valid
     @JsonManagedReference
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     List<Role> roles;
