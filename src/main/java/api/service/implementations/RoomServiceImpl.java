@@ -1,15 +1,14 @@
-package api.service;
+package api.service.implementations;
 
 import api.entity.Room;
+import api.service.RoomService;
 import api.util.comparator.RoomCapacityComparator;
 import api.util.comparator.RoomNameComparator;
 import api.util.exception.RoomNotFoundException;
 import api.repository.RoomRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package api.service;
+package api.service.implementations;
 
 import api.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;

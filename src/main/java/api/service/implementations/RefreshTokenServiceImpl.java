@@ -1,7 +1,8 @@
-package api.service;
+package api.service.implementations;
 
 import api.entity.RefreshToken;
 import api.repository.RefreshTokenRepository;
+import api.service.RefreshTokenService;
 import api.util.exception.RefreshTokenNotValidException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

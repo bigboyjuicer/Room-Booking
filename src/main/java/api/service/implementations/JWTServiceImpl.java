@@ -1,6 +1,8 @@
-package api.service;
+package api.service.implementations;
 
 import api.entity.RefreshToken;
+import api.service.JWTService;
+import api.service.RefreshTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

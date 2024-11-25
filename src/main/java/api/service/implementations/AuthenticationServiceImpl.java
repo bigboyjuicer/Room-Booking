@@ -1,7 +1,8 @@
-package api.service;
+package api.service.implementations;
 
 import api.entity.User;
 import api.repository.UserRepository;
+import api.service.AuthenticationService;
 import api.util.exception.UserNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

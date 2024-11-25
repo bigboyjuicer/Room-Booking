@@ -1,7 +1,8 @@
-package api.service;
+package api.service.implementations;
 
 import api.entity.User;
 import api.repository.UserRepository;
+import api.service.UserService;
 import api.util.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
