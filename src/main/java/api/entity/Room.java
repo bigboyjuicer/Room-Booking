@@ -1,11 +1,11 @@
 package api.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -26,24 +26,28 @@ public class Room {
     @Column(name = "name")
     private String name;
 
-    @JsonProperty("isActive")
     @Column(name = "is_active")
     private boolean isActive = true;
 
-    @Column(name = "image_data")
-    @Lob
-    private byte[] imageData;
-
-    @Column(name = "image_name")
-    private String imageName;
-
-    @Column(name = "image_type")
-    private String imageType;
+    @Column(name = "image_path")
+    private String imagePath;
 
     @Valid
+    @NotNull(message = "Cannot be null")
+    @Size(min = 7, max = 7, message = "Size of weekdays cannot be less or greater than 7")
     @JsonManagedReference
     @OneToMany(mappedBy = "room", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Weekday> weekdays;
+
+    public int countActiveWeekdays() {
+        int count = 0;
+        for (Weekday weekday : weekdays) {
+            if (weekday.isActive()) {
+                count++;
+            }
+        }
+        return count;
+    }
 
     public int getId() {
         return id;
@@ -53,29 +57,20 @@ public class Room {
         this.id = id;
     }
 
-    @Min(value = 1, message = "Cannot be less than 1")
     public int getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(@Min(value = 1, message = "Cannot be less than 1") int capacity) {
+    public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
 
-    public @NotNull(message = "Cannot be null") String getName() {
+    public String getName() {
         return name;
     }
 
-    public void setName(@NotNull(message = "Cannot be null") String name) {
+    public void setName(String name) {
         this.name = name;
-    }
-
-    public boolean isIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(boolean active) {
-        isActive = active;
     }
 
     public boolean isActive() {
@@ -86,28 +81,12 @@ public class Room {
         isActive = active;
     }
 
-    public byte[] getImageData() {
-        return imageData;
+    public String getImagePath() {
+        return imagePath;
     }
 
-    public void setImageData(byte[] imageData) {
-        this.imageData = imageData;
-    }
-
-    public String getImageName() {
-        return imageName;
-    }
-
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
-    }
-
-    public String getImageType() {
-        return imageType;
-    }
-
-    public void setImageType(String imageType) {
-        this.imageType = imageType;
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public List<Weekday> getWeekdays() {

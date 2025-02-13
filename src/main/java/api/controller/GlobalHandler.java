@@ -1,6 +1,6 @@
 package api.controller;
 
-import api.util.MyCustomResponse;
+import api.util.ApiResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -15,24 +15,24 @@ import java.util.Map;
 public class GlobalHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    public ResponseEntity<MyCustomResponse> handleValidationException(MethodArgumentNotValidException mex) {
+    public ResponseEntity<ApiResponse> handleValidationException(MethodArgumentNotValidException mex) {
         Map<String, String> errorsDescription = new HashMap<>();
         mex.getBindingResult().getAllErrors().forEach((error) -> {
             FieldError fieldError = (FieldError) error;
             String fieldName = fieldError.getField();
             errorsDescription.put(fieldName, error.getDefaultMessage());
         });
-        return ResponseEntity.badRequest().body(new MyCustomResponse(false, "Validation error occurred", null, errorsDescription));
+        return ResponseEntity.badRequest().body(new ApiResponse(false, "Validation error occurred", null, errorsDescription));
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<MyCustomResponse> handleInvalidFormatException(ExpiredJwtException ex) {
-        return ResponseEntity.badRequest().body(new MyCustomResponse(false, "JWT is expired", null, null));
+    public ResponseEntity<ApiResponse> handleInvalidFormatException(ExpiredJwtException ex) {
+        return ResponseEntity.badRequest().body(new ApiResponse(false, "JWT is expired", null, null));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<MyCustomResponse> handleInvalidFormatException(Exception ex) {
-        return ResponseEntity.badRequest().body(new MyCustomResponse(false, ex.getMessage(), null, null));
+    public ResponseEntity<ApiResponse> handleInvalidFormatException(Exception ex) {
+        return ResponseEntity.badRequest().body(new ApiResponse(false, ex.getMessage(), null, null));
     }
 
 }

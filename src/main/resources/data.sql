@@ -3,18 +3,16 @@ CREATE TABLE IF NOT EXISTS rooms(
     capacity int not null,
     name varchar(255) not null,
     is_active boolean not null default(true),
-    image_data bytea,
-    image_name varchar(255),
-    image_type varchar(255)
+    image_path varchar(255) not null
 );
 
 CREATE TABLE IF NOT EXISTS weekdays(
     id serial primary key,
     day integer not null,
     is_active boolean not null default(true),
-    start_time time not null,
-    end_time time not null,
-    room serial not null,
+    start_time time,
+    end_time time,
+    room integer not null,
 
     UNIQUE(day, room),
     CONSTRAINT room_fk FOREIGN KEY (room) REFERENCES rooms(id) ON DELETE CASCADE
@@ -59,12 +57,24 @@ CREATE TABLE IF NOT EXISTS authorities(
 
 CREATE TABLE IF NOT EXISTS refresh_tokens(
      id serial primary key,
-     email serial not null,
+     email varchar(255) not null,
      refresh_token varchar(255) not null,
 
      UNIQUE(email),
      UNIQUE(refresh_token),
      CONSTRAINT email_fk FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS bookings(
+    id serial primary key,
+    room serial not null,
+    email varchar(256) not null,
+    section serial not null,
+    start_time time not null,
+
+    CONSTRAINT section_fk FOREIGN KEY (section) REFERENCES sections(id) ON DELETE CASCADE,
+    CONSTRAINT room_fk FOREIGN KEY (room) REFERENCES rooms(id) ON DELETE CASCADE,
+    CONSTRAINT email_fk FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
 );
 
 CREATE OR REPLACE FUNCTION add_authority() RETURNS TRIGGER AS '

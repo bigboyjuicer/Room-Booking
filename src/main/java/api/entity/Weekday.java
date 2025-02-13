@@ -1,7 +1,7 @@
 package api.entity;
 
+import api.util.annotation.IsActiveDependent;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
@@ -24,17 +24,15 @@ public class Weekday implements Comparable<Weekday> {
     @Max(value = 7, message = "Cannot be greater than 7")
     private int day;
 
-    @JsonProperty("isActive")
-    @NotNull(message = "Cannot be null")
     @Column(name = "is_active")
     private boolean isActive = true;
 
-    @NotNull(message = "Cannot be null")
     @Column(name = "start_time")
+    @IsActiveDependent(isActiveField = "isActive", message = "Start time must be not null when isActive is true")
     private Time startTime;
 
-    @NotNull(message = "Cannot be null")
     @Column(name = "end_time")
+    @IsActiveDependent(isActiveField = "isActive", message = "End time must be not null when isActive is true")
     private Time endTime;
 
     @JsonBackReference
@@ -51,37 +49,35 @@ public class Weekday implements Comparable<Weekday> {
         this.id = id;
     }
 
-    @NotNull(message = "Cannot be null")
     public int getDay() {
         return day;
     }
 
-    public void setDay(@NotNull(message = "Cannot be null") int day) {
+    public void setDay(int day) {
         this.day = day;
     }
 
-    @NotNull(message = "Cannot be null")
-    public boolean isIsActive() {
+    public boolean isActive() {
         return isActive;
     }
 
-    public void setIsActive(@NotNull(message = "Cannot be null") boolean active) {
+    public void setActive(boolean active) {
         isActive = active;
     }
 
-    public @NotNull(message = "Cannot be null") Time getStartTime() {
+    public Time getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(@NotNull(message = "Cannot be null") Time startTime) {
+    public void setStartTime(Time startTime) {
         this.startTime = startTime;
     }
 
-    public @NotNull(message = "Cannot be null") Time getEndTime() {
+    public Time getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(@NotNull(message = "Cannot be null") Time endTime) {
+    public void setEndTime(Time endTime) {
         this.endTime = endTime;
     }
 

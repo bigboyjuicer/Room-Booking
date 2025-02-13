@@ -2,14 +2,14 @@ package api.util;
 
 import java.util.Map;
 
-public class MyCustomResponse {
+public class ApiResponse {
 
     private Boolean success;
     private String message;
     private Map<String, Object> data;
     private Map<String, String> errorsDescription;
 
-    public MyCustomResponse(Boolean success, String message, Map<String, Object> data, Map<String, String> errorsDescription) {
+    public ApiResponse(Boolean success, String message, Map<String, Object> data, Map<String, String> errorsDescription) {
         this.success = success;
         this.message = message;
         this.data = data;

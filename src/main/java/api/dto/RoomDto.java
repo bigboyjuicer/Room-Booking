@@ -1,6 +1,7 @@
 package api.dto;
 
 import api.entity.Weekday;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -16,6 +17,44 @@ public class RoomDto {
 
     private boolean isActive;
 
-    private String image;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Weekday> getWeekdays() {
+        return weekdays;
+    }
+
+    public void setWeekdays(List<Weekday> weekdays) {
+        this.weekdays = weekdays;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
 
 }
