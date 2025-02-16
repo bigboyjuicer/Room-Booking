@@ -1,8 +1,8 @@
 package api.service.implementations;
 
+import api.dto.Day;
 import api.dto.Pagination;
 import api.entity.Room;
-import api.entity.Weekday;
 import api.service.RoomService;
 import api.util.exception.RoomNotFoundException;
 import api.repository.RoomRepository;
@@ -44,15 +44,12 @@ public class RoomServiceImpl implements RoomService {
         } else {
             rooms = roomRepository.findAll();
         }
-        //rooms.forEach(room -> Collections.sort(room.getWeekdays()));
         return rooms;
     }
 
     @Override
     public Room getRoomById(int id) {
         if (roomRepository.findById(id).isPresent()) {
-            Room room = roomRepository.findById(id).get();
-            Collections.sort(room.getWeekdays());
             return roomRepository.findById(id).get();
         } else {
             throw new RoomNotFoundException("Room with this id not found");
@@ -63,8 +60,6 @@ public class RoomServiceImpl implements RoomService {
     public Room saveRoom(Room room, MultipartFile image) throws IOException {
         String imagePath = saveImage(image);
         room.setImagePath(imagePath);
-
-        //Collections.sort(newRoom.getWeekdays());
         return roomRepository.save(room);
     }
 
@@ -80,7 +75,7 @@ public class RoomServiceImpl implements RoomService {
         return UPLOAD_DIR + fileName;
     }
 
-    public List<String> getAvailableDaysInRoom(int id, Pagination pagination) {
+    public List<Day> getAvailableDaysInRoom(int id, Pagination pagination) {
         Optional<Room> optionalRoom = roomRepository.findById(id);
         if (optionalRoom.isPresent()) {
             Room room = optionalRoom.get();
@@ -95,25 +90,20 @@ public class RoomServiceImpl implements RoomService {
         return today.getDayOfWeek().getValue();
     }
 
-    private List<String> makeDayList(Room room, Pagination pagination) {
-        List<String> days = new ArrayList<>();
+    private List<Day> makeDayList(Room room, Pagination pagination) {
+        List<Day> days = new ArrayList<>();
         LocalDate today = LocalDate.now();
 
-        if(pagination.getPage() > 1) {
-            today = today.plusDays(pagination.getSize());
+        today = today.plusDays((long) pagination.getSize() * pagination.getPage() - pagination.getSize());
+
+        int offset = 0;
+        if(pagination.getPage() == 1) {
+            offset = getDayOfWeek() - 1;
         }
 
-        for (int i = 0; i < pagination.getSize(); i++) {
-            for (Weekday weekday : room.getWeekdays()) {
-                if(i == 0 && weekday.getDay() < getDayOfWeek()) {
-                    continue;
-                }
-                if (weekday.isActive()) {
-                    days.add(today.toString());
-                    i++;
-                }
-                today = today.plusDays(1);
-            }
+        for (int i = offset; i < pagination.getSize() + offset; i++) {
+            days.add(new Day(today.toString(), room.getWeekdays().get(i % 7).isActive()));
+            today = today.plusDays(1);
         }
         return days;
     }
@@ -137,8 +127,6 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Room updateRoom(Room room) {
         if (roomRepository.existsById(room.getId())) {
-            //Room updatedRoom = roomRepository.save(room);
-            //Collections.sort(updatedRoom.getWeekdays());
             return roomRepository.save(room);
         } else {
             throw new RoomNotFoundException("Room with this id not found");

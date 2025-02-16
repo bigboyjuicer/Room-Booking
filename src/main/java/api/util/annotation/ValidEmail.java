@@ -1,6 +1,6 @@
 package api.util.annotation;
 
-import api.util.EmailValidator;
+import api.util.validator.EmailValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

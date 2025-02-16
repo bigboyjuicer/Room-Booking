@@ -1,9 +1,22 @@
+CREATE TABLE IF NOT EXISTS address(
+    id serial PRIMARY KEY,
+    region varchar(255) not null,
+    city varchar(255) not null,
+    street varchar(255) not null,
+    building varchar(255) not null,
+
+    UNIQUE(city, street, building)
+);
+
 CREATE TABLE IF NOT EXISTS rooms(
     id serial PRIMARY KEY,
     capacity int not null,
     name varchar(255) not null,
     is_active boolean not null default(true),
-    image_path varchar(255) not null
+    image_path varchar(255) not null,
+    address int not null,
+
+    CONSTRAINT address_fk FOREIGN KEY (address) REFERENCES address(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS weekdays(
@@ -35,12 +48,12 @@ CREATE TABLE IF NOT EXISTS users(
     first_name varchar(255) not null,
     last_name varchar(255) not null,
     password varchar(255) not null,
-    section serial not null,
+    section int not null,
     is_account_non_expired	boolean not null default(true),
     is_account_non_locked boolean not null default(true),
     is_credentials_non_expired boolean not null default(true),
     is_enabled boolean not null default(true),
-    settings serial not null,
+    settings int not null,
 
     CONSTRAINT section_fk FOREIGN KEY (section) REFERENCES sections(id) ON DELETE CASCADE,
     CONSTRAINT settings_fk FOREIGN KEY (settings) REFERENCES settings(id) ON DELETE CASCADE
@@ -67,12 +80,11 @@ CREATE TABLE IF NOT EXISTS refresh_tokens(
 
 CREATE TABLE IF NOT EXISTS bookings(
     id serial primary key,
-    room serial not null,
+    room int not null,
     email varchar(256) not null,
-    section serial not null,
-    start_time time not null,
+    time timestamp not null,
 
-    CONSTRAINT section_fk FOREIGN KEY (section) REFERENCES sections(id) ON DELETE CASCADE,
+    UNIQUE(room, time),
     CONSTRAINT room_fk FOREIGN KEY (room) REFERENCES rooms(id) ON DELETE CASCADE,
     CONSTRAINT email_fk FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
 );

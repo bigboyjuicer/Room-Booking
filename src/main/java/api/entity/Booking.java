@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
-import java.sql.Time;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "bookings")
@@ -27,15 +28,9 @@ public class Booking {
     @NotNull(message = "Cannot be null")
     private User user;
 
-    @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "section")
     @NotNull(message = "Cannot be null")
-    private Section section;
-
-    @NotNull(message = "Cannot be null")
-    @Column(name = "start_time")
-    private Time startTime;
+    @Column(name = "time")
+    private LocalDateTime time;
 
     public int getId() {
         return id;
@@ -61,19 +56,11 @@ public class Booking {
         this.user = user;
     }
 
-    public Section getSection() {
-        return section;
+    public LocalDateTime getTime() {
+        return time;
     }
 
-    public void setSection(Section section) {
-        this.section = section;
-    }
-
-    public Time getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Time startTime) {
-        this.startTime = startTime;
+    public void setTime(LocalDateTime time) {
+        this.time = time;
     }
 }

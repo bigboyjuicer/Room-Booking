@@ -1,5 +1,6 @@
 package api.controller;
 
+import api.dto.Day;
 import api.dto.Pagination;
 import api.dto.RoomDto;
 import api.entity.Room;
@@ -118,8 +119,8 @@ public class RoomController {
 
     @Operation(summary = "Get available days for booking")
     @GetMapping("/{id}/days")
-    public ResponseEntity<ApiResponse> getRoomDaysById(@PathVariable(name = "id") int id, @RequestBody Pagination pagination) {
-        List<String> days = roomService.getAvailableDaysInRoom(id, pagination);
+    public ResponseEntity<ApiResponse> getRoomDaysById(@PathVariable(name = "id") int id, @Valid @RequestBody Pagination pagination) {
+        List<Day> days = roomService.getAvailableDaysInRoom(id, pagination);
         Map<String, Object> data = new HashMap<>() {{
             put("days", days);
             put("pagination", pagination);

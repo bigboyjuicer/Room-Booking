@@ -8,6 +8,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.sql.Time;
+import java.time.LocalTime;
+import java.time.OffsetTime;
 
 @Entity
 @Table(name = "weekdays")
@@ -29,11 +31,27 @@ public class Weekday implements Comparable<Weekday> {
 
     @Column(name = "start_time")
     @IsActiveDependent(isActiveField = "isActive", message = "Start time must be not null when isActive is true")
-    private Time startTime;
+    private LocalTime startTime;
 
     @Column(name = "end_time")
     @IsActiveDependent(isActiveField = "isActive", message = "End time must be not null when isActive is true")
-    private Time endTime;
+    private LocalTime endTime;
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
 
     @JsonBackReference
     @ManyToOne
@@ -65,20 +83,12 @@ public class Weekday implements Comparable<Weekday> {
         isActive = active;
     }
 
-    public Time getStartTime() {
-        return startTime;
+    public Room getRoom() {
+        return room;
     }
 
-    public void setStartTime(Time startTime) {
-        this.startTime = startTime;
-    }
-
-    public Time getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Time endTime) {
-        this.endTime = endTime;
+    public void setRoom(Room room) {
+        this.room = room;
     }
 
     @Override

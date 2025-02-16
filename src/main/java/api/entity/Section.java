@@ -3,7 +3,6 @@ package api.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
-
 @Entity
 @Table(name = "sections")
 public class Section {

@@ -58,7 +58,7 @@ public class UserController {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ApiResponse> handleRoomNotFoundException(UserNotFoundException ex) {
+    public ResponseEntity<ApiResponse> handleUserNotFoundException(UserNotFoundException ex) {
         return ResponseEntity.badRequest().body(new ApiResponse(false, ex.getMessage(), null, new HashMap<>() {{
             put("email", "Not found");
         }}));

@@ -44,17 +44,24 @@ public class User implements UserDetails {
 
     @Valid
     @JsonBackReference
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "section")
     @NotNull(message = "Cannot be null")
     private Section section;
 
     @Valid
     @JsonBackReference
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "settings")
     @NotNull(message = "Cannot be null")
     private Settings settings;
+
+    /*@Valid
+    @JsonBackReference
+    @OneToMany(mappedBy = "")
+    @JoinColumn(name = "settings")
+    @NotNull(message = "Cannot be null")
+    private List<Booking> bookings;*/
 
     @Valid
     @JsonManagedReference

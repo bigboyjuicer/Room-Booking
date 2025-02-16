@@ -1,6 +1,5 @@
-package api.util;
+package api.util.validator;
 
-import api.entity.Weekday;
 import api.util.annotation.IsActiveDependent;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

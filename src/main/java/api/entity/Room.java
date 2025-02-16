@@ -26,6 +26,11 @@ public class Room {
     @Column(name = "name")
     private String name;
 
+    @Valid
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address")
+    private Address address;
+
     @Column(name = "is_active")
     private boolean isActive = true;
 
@@ -38,16 +43,6 @@ public class Room {
     @JsonManagedReference
     @OneToMany(mappedBy = "room", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Weekday> weekdays;
-
-    public int countActiveWeekdays() {
-        int count = 0;
-        for (Weekday weekday : weekdays) {
-            if (weekday.isActive()) {
-                count++;
-            }
-        }
-        return count;
-    }
 
     public int getId() {
         return id;
@@ -71,6 +66,14 @@ public class Room {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
     public boolean isActive() {

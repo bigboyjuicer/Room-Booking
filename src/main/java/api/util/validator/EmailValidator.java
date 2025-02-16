@@ -1,4 +1,4 @@
-package api.util;
+package api.util.validator;
 
 import api.util.annotation.ValidEmail;
 import jakarta.validation.ConstraintValidator;

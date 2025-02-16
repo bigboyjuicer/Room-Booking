@@ -1,5 +1,6 @@
 package api.service;
 
+import api.dto.Day;
 import api.dto.Pagination;
 import api.entity.Room;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +17,6 @@ public interface RoomService {
     Room updateRoom(Room room);
     Path updateRoomImage(MultipartFile image, int id) throws IOException;
     void deleteRoom(int id) throws IOException;
-    List<String> getAvailableDaysInRoom(int id, Pagination pagination);
+    List<Day> getAvailableDaysInRoom(int id, Pagination pagination);
 
 }

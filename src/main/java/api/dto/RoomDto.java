@@ -1,7 +1,7 @@
 package api.dto;
 
+import api.entity.Address;
 import api.entity.Weekday;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -12,6 +12,8 @@ public class RoomDto {
     private int capacity;
 
     private String name;
+
+    private Address address;
 
     private List<Weekday> weekdays;
 
@@ -39,6 +41,14 @@ public class RoomDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
     public List<Weekday> getWeekdays() {

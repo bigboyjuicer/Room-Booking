@@ -1,6 +1,6 @@
 package api.util.annotation;
 
-import api.util.IsActiveValidator;
+import api.util.validator.IsActiveValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
