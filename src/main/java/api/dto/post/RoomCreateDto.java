@@ -1,6 +1,7 @@
-package api.entity;
+package api.dto.post;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import api.entity.Address;
+import api.entity.Weekday;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -10,51 +11,24 @@ import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
-@Entity
-@Table(name = "rooms")
-public class Room {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+public class RoomCreateDto {
 
     @Min(value = 1, message = "Cannot be less than 1")
-    @Column(name = "capacity")
     private int capacity;
 
     @NotNull(message = "Cannot be null")
     @NotEmpty(message = "Cannot be empty")
-    @Column(name = "name")
     private String name;
 
     @Valid
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address")
     private Address address;
 
-    @Column(name = "is_active")
-    private boolean isActive = true;
-
-    @Column(name = "image_path")
-    @NotNull(message = "Cannot be null")
-    @NotEmpty(message = "Cannot be empty")
-    private String imagePath;
+    private boolean isActive;
 
     @Valid
     @Size(min = 7, max = 7, message = "Size of weekdays cannot be less or greater than 7")
-    @JsonManagedReference
-    @OneToMany(mappedBy = "room", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @OrderBy("day ASC")
     private List<Weekday> weekdays;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public @Min(value = 1, message = "Cannot be less than 1") int getCapacity() {
         return capacity;
@@ -86,14 +60,6 @@ public class Room {
 
     public void setActive(boolean active) {
         isActive = active;
-    }
-
-    public @NotEmpty(message = "Cannot be empty") String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(@NotEmpty(message = "Cannot be empty") String imagePath) {
-        this.imagePath = imagePath;
     }
 
     public @Valid @Size(min = 7, max = 7, message = "Size of weekdays cannot be less or greater than 7") List<Weekday> getWeekdays() {

@@ -1,8 +1,8 @@
 package api.controller;
 
-import api.dto.LoginUserDto;
-import api.dto.RegisterUserDto;
-import api.dto.UserDto;
+import api.dto.post.LoginUserDto;
+import api.dto.post.RegisterUserDto;
+import api.dto.get.UserProfileDto;
 import api.entity.User;
 import api.service.AuthenticationService;
 import api.service.JWTService;
@@ -38,7 +38,7 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse> signup(@RequestBody RegisterUserDto registerUserDto) {
-        UserDto registeredUser = UserMapper.MAPPER.fromUser(authenticationService.signup(RegisterUserMapper.MAPPER.toUser(registerUserDto)));
+        UserProfileDto registeredUser = UserMapper.MAPPER.fromUser(authenticationService.signup(RegisterUserMapper.MAPPER.toUser(registerUserDto)));
         return ResponseEntity.ok().body(new ApiResponse(true, "Successfully registered", new HashMap<>() {{ put("user", registeredUser); }}, null));
     }
 

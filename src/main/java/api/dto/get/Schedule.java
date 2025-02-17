@@ -1,4 +1,4 @@
-package api.dto;
+package api.dto.get;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,10 +11,10 @@ public class Schedule {
     @JsonFormat(pattern = "dd.MM.yyyy HH:mm:ss")
     private LocalDateTime time;
     private String status;
-    private UserDto user;
+    private UserProfileDto user;
     private String section;
 
-    public Schedule(LocalDateTime time, String status, UserDto user, String section) {
+    public Schedule(LocalDateTime time, String status, UserProfileDto user, String section) {
         this.time = time;
         this.status = status;
         this.user = user;
@@ -37,11 +37,11 @@ public class Schedule {
         this.status = status;
     }
 
-    public UserDto getUser() {
+    public UserProfileDto getUser() {
         return user;
     }
 
-    public void setUser(UserDto user) {
+    public void setUser(UserProfileDto user) {
         this.user = user;
     }
 

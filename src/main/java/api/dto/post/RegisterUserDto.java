@@ -1,4 +1,4 @@
-package api.dto;
+package api.dto.post;
 
 import api.entity.Section;
 import api.entity.Settings;

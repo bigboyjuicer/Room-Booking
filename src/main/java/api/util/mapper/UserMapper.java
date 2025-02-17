@@ -1,6 +1,6 @@
 package api.util.mapper;
 
-import api.dto.UserDto;
+import api.dto.get.UserProfileDto;
 import api.entity.User;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
@@ -12,12 +12,12 @@ import java.util.List;
 public interface UserMapper {
     UserMapper MAPPER = Mappers.getMapper(UserMapper.class);
 
-    User toUser(UserDto userDTO);
+    User toUser(UserProfileDto userProfileDTO);
 
     @InheritInverseConfiguration
-    UserDto fromUser(User user);
+    UserProfileDto fromUser(User user);
 
-    List<User> toUsers(List<UserDto> userDtoList);
+    List<User> toUsers(List<UserProfileDto> userProfileDtoList);
 
-    List<UserDto> fromUsers(List<User> users);
+    List<UserProfileDto> fromUsers(List<User> users);
 }

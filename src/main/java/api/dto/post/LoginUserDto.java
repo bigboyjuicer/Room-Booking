@@ -1,4 +1,4 @@
-package api.dto;
+package api.dto.post;
 
 public class LoginUserDto {
 

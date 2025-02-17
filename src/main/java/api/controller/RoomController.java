@@ -1,13 +1,15 @@
 package api.controller;
 
-import api.dto.Day;
-import api.dto.Pagination;
-import api.dto.RoomDto;
+import api.dto.get.Day;
+import api.dto.get.Pagination;
+import api.dto.get.RoomDto;
+import api.dto.post.RoomCreateDto;
 import api.entity.Room;
 import api.util.exception.RoomNotFoundException;
 import api.service.RoomService;
 import api.util.ApiResponse;
 import api.util.mapper.RoomMapper;
+import api.util.mapper.RoomCreateMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -15,6 +17,7 @@ import org.springframework.core.io.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +39,7 @@ public class RoomController {
 
     @Operation(summary = "Get all rooms")
     @GetMapping()
+    @Secured("USER")
     public ResponseEntity<ApiResponse> getAllRooms(@RequestBody(required = false) ObjectNode objectNode) {
         String filter = objectNode == null ? null : objectNode.get("filter") == null ? null : objectNode.get("filter").asText();
         List<RoomDto> rooms = RoomMapper.MAPPER.fromRooms(roomService.getAllRooms(filter));
@@ -51,6 +55,7 @@ public class RoomController {
 
     @Operation(summary = "Get room by ID")
     @GetMapping("/{id}")
+    @Secured("USER")
     public ResponseEntity<ApiResponse> getRoomById(@PathVariable(name = "id") int id) {
         RoomDto room = RoomMapper.MAPPER.toRoomDto(roomService.getRoomById(id));
         Map<String, Object> data = new HashMap<>() {{
@@ -61,7 +66,8 @@ public class RoomController {
 
     @Operation(summary = "Get image of the room by ID")
     @GetMapping("/{id}/image")
-    public ResponseEntity<Resource> getRoomImage(@PathVariable(name = "id") int id) {
+    @Secured("USER")
+    public ResponseEntity<Resource> getRoomImage(@PathVariable int id) {
         Room room = roomService.getRoomById(id);
 
         Path filePath = Paths.get(room.getImagePath()).normalize();
@@ -82,11 +88,11 @@ public class RoomController {
 
     @Operation(summary = "Create new room")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    //@Secured("ADMIN")
-    public ResponseEntity<ApiResponse> addRoom(@Valid @RequestPart("room") Room room, @RequestPart("image") MultipartFile image) {
+    @Secured("ADMIN")
+    public ResponseEntity<ApiResponse> addRoom(@Valid @RequestPart("room") RoomCreateDto room, @RequestPart("image") MultipartFile image) {
         try {
             Map<String, Object> data = new HashMap<>() {{
-                put("room", RoomMapper.MAPPER.toRoomDto(roomService.saveRoom(room, image)));
+                put("room", RoomMapper.MAPPER.toRoomDto(roomService.saveRoom(RoomCreateMapper.MAPPER.toRoom(room), image)));
             }};
             return new ResponseEntity<>(new ApiResponse(true, "Room successfully added", data, null), HttpStatus.CREATED);
         } catch (IOException ex) {
@@ -96,7 +102,8 @@ public class RoomController {
 
     @Operation(summary = "Update room image")
     @PutMapping("/{id}/image")
-    public ResponseEntity<Resource> addImage(@PathVariable int id, MultipartFile image) {
+    @Secured("ADMIN")
+    public ResponseEntity<Resource> updateImage(@PathVariable int id, MultipartFile image) {
         try {
             roomService.updateRoomImage(image, id);
             return getRoomImage(id);
@@ -107,7 +114,7 @@ public class RoomController {
 
     @Operation(summary = "Delete room by ID")
     @DeleteMapping("/{id}")
-    //@Secured("ADMIN")
+    @Secured("ADMIN")
     public ResponseEntity<ApiResponse> deleteRoom(@PathVariable int id) {
         try {
             roomService.deleteRoom(id);
@@ -117,31 +124,32 @@ public class RoomController {
         }
     }
 
-    @Operation(summary = "Get available days for booking")
+    @Operation(summary = "Get days schedule for room")
     @GetMapping("/{id}/days")
-    public ResponseEntity<ApiResponse> getRoomDaysById(@PathVariable(name = "id") int id, @Valid @RequestBody Pagination pagination) {
+    @Secured("USER")
+    public ResponseEntity<ApiResponse> getRoomDaysScheduleById(@PathVariable(name = "id") int id, @Valid @RequestBody Pagination pagination) {
         List<Day> days = roomService.getAvailableDaysInRoom(id, pagination);
         Map<String, Object> data = new HashMap<>() {{
             put("days", days);
             put("pagination", pagination);
         }};
-        return ResponseEntity.ok().body(new ApiResponse(true, "Days successfully packed", data, null));
+        return ResponseEntity.ok().body(new ApiResponse(true, "Days schedule successfully generated", data, null));
     }
 
     @Operation(summary = "Update room by ID")
     @PutMapping("/{id}")
-    //@Secured("ADMIN")
-    public ResponseEntity<ApiResponse> updateRoom(@Valid @RequestBody Room room, @PathVariable int id) {
+    @Secured("ADMIN")
+    public ResponseEntity<ApiResponse> updateRoom(@Valid @RequestBody RoomDto room, @PathVariable int id) {
         room.setId(id);
         Map<String, Object> data = new HashMap<>() {{
-            put("room", RoomMapper.MAPPER.toRoomDto(roomService.updateRoom(room)));
+            put("room", RoomMapper.MAPPER.toRoomDto(roomService.updateRoom(RoomMapper.MAPPER.toRoom(room))));
         }};
         return ResponseEntity.ok().body(new ApiResponse(true, "Room successfully updated", data, null));
     }
 
     @ExceptionHandler(RoomNotFoundException.class)
     public ResponseEntity<ApiResponse> handleRoomNotFoundException(RoomNotFoundException ex) {
-        return ResponseEntity.badRequest().body(new ApiResponse(false, ex.getMessage(), null, new HashMap<>() {{put("id", "Not found");}}));
+        return ResponseEntity.badRequest().body(new ApiResponse(false, ex.getMessage(), null, null));
     }
 
 }

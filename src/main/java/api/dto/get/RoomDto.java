@@ -1,4 +1,4 @@
-package api.dto;
+package api.dto.get;
 
 import api.entity.Address;
 import api.entity.Weekday;

@@ -1,6 +1,8 @@
 package api.entity;
 
+import api.util.annotation.ValidEmail;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
@@ -13,10 +15,13 @@ public class RefreshToken {
     private int id;
 
     @NotNull(message = "Cannot be null")
+    @NotEmpty(message = "Cannot be empty")
     @Column(name = "refresh_token")
     private String refreshToken;
 
     @NotNull(message = "Cannot be null")
+    @NotEmpty(message = "Cannot be empty")
+    @ValidEmail(message = "Not valid email")
     @Column(name = "email")
     private String email;
 
@@ -28,21 +33,19 @@ public class RefreshToken {
         this.id = id;
     }
 
-    public @NotNull(message = "Cannot be null") String getRefreshToken() {
+    public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String getRefreshToken() {
         return refreshToken;
     }
 
-    public void setRefreshToken(@NotNull(message = "Cannot be null") String refreshToken) {
+    public void setRefreshToken(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String refreshToken) {
         this.refreshToken = refreshToken;
     }
 
-    public @NotNull(message = "Cannot be null") String getEmail() {
+    public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String getEmail() {
         return email;
     }
 
-    public void setEmail(@NotNull(message = "Cannot be null") String email) {
+    public void setEmail(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String email) {
         this.email = email;
     }
-
-
 }

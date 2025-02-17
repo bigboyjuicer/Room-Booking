@@ -1,7 +1,10 @@
 package api.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.Objects;
 
 @Entity
 @Table(name = "sections")
@@ -13,10 +16,12 @@ public class Section {
     private int id;
 
     @NotNull(message = "Cannot be null")
+    @NotEmpty(message = "Cannot be empty")
     @Column(name = "name")
     private String name;
 
     @NotNull(message = "Cannot be null")
+    @NotEmpty(message = "Cannot be empty")
     @Column(name = "short_name")
     private String shortName;
 
@@ -32,20 +37,31 @@ public class Section {
         this.id = id;
     }
 
-    public @NotNull(message = "Cannot be null") String getName() {
+    public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String getName() {
         return name;
     }
 
-    public void setName(@NotNull(message = "Cannot be null") String name) {
+    public void setName(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String name) {
         this.name = name;
     }
 
-    public @NotNull(message = "Cannot be null") String getShortName() {
+    public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String getShortName() {
         return shortName;
     }
 
-    public void setShortName(@NotNull(message = "Cannot be null") String shortName) {
+    public void setShortName(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String shortName) {
         this.shortName = shortName;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return id == section.id && Objects.equals(name, section.name) && Objects.equals(shortName, section.shortName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, shortName);
+    }
 }

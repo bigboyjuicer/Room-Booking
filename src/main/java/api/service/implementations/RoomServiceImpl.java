@@ -1,7 +1,7 @@
 package api.service.implementations;
 
-import api.dto.Day;
-import api.dto.Pagination;
+import api.dto.get.Day;
+import api.dto.get.Pagination;
 import api.entity.Room;
 import api.service.RoomService;
 import api.util.exception.RoomNotFoundException;
@@ -127,6 +127,8 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Room updateRoom(Room room) {
         if (roomRepository.existsById(room.getId())) {
+            Room existingRoom = roomRepository.findById(room.getId()).get();
+            room.setImagePath(existingRoom.getImagePath());
             return roomRepository.save(room);
         } else {
             throw new RoomNotFoundException("Room with this id not found");

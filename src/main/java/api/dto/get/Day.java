@@ -1,4 +1,4 @@
-package api.dto;
+package api.dto.get;
 
 public class Day {
 

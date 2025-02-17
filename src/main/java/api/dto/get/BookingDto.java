@@ -1,5 +1,4 @@
-package api.dto;
-
+package api.dto.get;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

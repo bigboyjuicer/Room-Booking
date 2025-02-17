@@ -1,6 +1,6 @@
 package api.util.mapper;
 
-import api.dto.BookingDto;
+import api.dto.get.BookingDto;
 import api.entity.Booking;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

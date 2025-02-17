@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "users")
@@ -142,14 +143,15 @@ public class User implements UserDetails {
         this.settings = settings;
     }
 
-    public List<Role> getRoles() {
+    public @Valid List<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(@Valid List<Role> roles) {
         this.roles = roles;
     }
 
+    @Override
     public boolean isAccountNonExpired() {
         return isAccountNonExpired;
     }
@@ -158,6 +160,7 @@ public class User implements UserDetails {
         isAccountNonExpired = accountNonExpired;
     }
 
+    @Override
     public boolean isAccountNonLocked() {
         return isAccountNonLocked;
     }
@@ -166,6 +169,7 @@ public class User implements UserDetails {
         isAccountNonLocked = accountNonLocked;
     }
 
+    @Override
     public boolean isCredentialsNonExpired() {
         return isCredentialsNonExpired;
     }
@@ -174,11 +178,24 @@ public class User implements UserDetails {
         isCredentialsNonExpired = credentialsNonExpired;
     }
 
+    @Override
     public boolean isEnabled() {
         return isEnabled;
     }
 
     public void setEnabled(boolean enabled) {
         isEnabled = enabled;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return isAccountNonExpired() == user.isAccountNonExpired() && isAccountNonLocked() == user.isAccountNonLocked() && isCredentialsNonExpired() == user.isCredentialsNonExpired() && isEnabled() == user.isEnabled() && Objects.equals(getEmail(), user.getEmail()) && Objects.equals(getFirstName(), user.getFirstName()) && Objects.equals(getLastName(), user.getLastName()) && Objects.equals(getPassword(), user.getPassword()) && Objects.equals(getSection(), user.getSection()) && Objects.equals(getSettings(), user.getSettings()) && Objects.equals(getRoles(), user.getRoles());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getEmail(), getFirstName(), getLastName(), getPassword(), getSection(), getSettings(), getRoles(), isAccountNonExpired(), isAccountNonLocked(), isCredentialsNonExpired(), isEnabled());
     }
 }

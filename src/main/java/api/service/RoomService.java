@@ -1,7 +1,8 @@
 package api.service;
 
-import api.dto.Day;
-import api.dto.Pagination;
+import api.dto.get.Day;
+import api.dto.get.Pagination;
+import api.dto.post.RoomCreateDto;
 import api.entity.Room;
 import org.springframework.web.multipart.MultipartFile;
 

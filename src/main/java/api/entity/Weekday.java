@@ -13,7 +13,7 @@ import java.time.OffsetTime;
 
 @Entity
 @Table(name = "weekdays")
-public class Weekday implements Comparable<Weekday> {
+public class Weekday {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +37,36 @@ public class Weekday implements Comparable<Weekday> {
     @IsActiveDependent(isActiveField = "isActive", message = "End time must be not null when isActive is true")
     private LocalTime endTime;
 
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "room")
+    //@NotNull(message = "Cannot be null")
+    private Room room;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public @NotNull(message = "Cannot be null") @Positive(message = "Cannot be 0 or negative") @Max(value = 7, message = "Cannot be greater than 7") int getDay() {
+        return day;
+    }
+
+    public void setDay(@NotNull(message = "Cannot be null") @Positive(message = "Cannot be 0 or negative") @Max(value = 7, message = "Cannot be greater than 7") int day) {
+        this.day = day;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
     public LocalTime getStartTime() {
         return startTime;
     }
@@ -51,48 +81,5 @@ public class Weekday implements Comparable<Weekday> {
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
-    }
-
-    @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "room")
-    @NotNull(message = "Cannot be null")
-    private Room room;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getDay() {
-        return day;
-    }
-
-    public void setDay(int day) {
-        this.day = day;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-    }
-
-    public Room getRoom() {
-        return room;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
-    }
-
-    @Override
-    public int compareTo(Weekday o) {
-        return Integer.compare(this.getDay(), o.getDay());
     }
 }

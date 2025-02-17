@@ -1,21 +1,20 @@
 package api.controller;
 
-import api.dto.BookingCreateDto;
-import api.dto.BookingDto;
-import api.dto.Schedule;
+import api.dto.delete.BookingDeleteDto;
+import api.dto.post.BookingCreateDto;
+import api.dto.get.Schedule;
 import api.entity.Booking;
 import api.service.BookingService;
 import api.util.ApiResponse;
-import api.util.mapper.BookingMapper;
+import api.util.mapper.UserMapper;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.constraints.Pattern;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.*;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,68 +28,34 @@ public class BookingController {
         this.bookingService = bookingService;
     }
 
-    @Operation(summary = "Get all bookings")
-    @GetMapping
-    public ResponseEntity<ApiResponse> getAllBookings() {
-        List<Booking> bookings = bookingService.getAllBookings();
-        if (bookings.isEmpty()) {
-            return ResponseEntity.ok().body(new ApiResponse(true, "There are no bookings", null, null));
-        } else {
-            return ResponseEntity.ok().body(new ApiResponse(false, "All bookings successfully found",
-                    new HashMap<>() {{
-                        put("bookings", bookings);
-                    }}, null));
-        }
-    }
-
-    /*@GetMapping("/room/{id}")
-    public ResponseEntity<ApiResponse> getBookingsByRoomId(@PathVariable int id) {
-        List<BookingDto> bookings = bookingService.getBookingsByRoomId(id);
-        if (bookings.isEmpty()) {
-            return ResponseEntity.ok().body(new ApiResponse(true, "There are no bookings", null, null));
-        } else {
-            return ResponseEntity.ok().body(new ApiResponse(false, "All bookings successfully found",
-                    new HashMap<>() {{
-                        put("bookings", bookings);
-                    }}, null));
-        }
-    }*/
-
-    @GetMapping("/room/{id}")
-    public ResponseEntity<ApiResponse> getBookingsByRoomIdAndDate(@PathVariable int id, @RequestParam @DateTimeFormat(pattern = "dd.MM.yyyy") LocalDate date) {
-        List<Schedule> schedules = bookingService.getBookingsByRoomIdAndDate(id, date);
+    @Operation(summary = "Get schedule for booking for a certain room by id and date")
+    @GetMapping("/room/{id}/{date}")
+    @Secured("USER")
+    public ResponseEntity<ApiResponse> getScheduleForRoom(@PathVariable int id, @PathVariable @DateTimeFormat(pattern = "dd.MM.yyyy") LocalDate date) {
+        List<Schedule> schedule = bookingService.getBookingsByRoomIdAndDate(id, date);
         return ResponseEntity.ok().body(new ApiResponse(false, "All bookings successfully found",
                 new HashMap<>() {{
-                    put("bookings", schedules);
+                    put("bookings", schedule);
                 }}, null));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> getBookingById(@PathVariable int id) {
-        Booking booking = bookingService.getBookingById(id);
-        return ResponseEntity.ok().body(new ApiResponse(true, "Booking successfully found", new HashMap<>() {{
-            put("booking", booking);
-        }}, null));
-    }
-
+    @Operation(summary = "Create booking for a room")
     @PostMapping
+    @Secured("USER")
     public ResponseEntity<ApiResponse> addBooking(@RequestBody BookingCreateDto booking) {
+        Booking newBooking = bookingService.saveBooking(booking);
+        Schedule schedule = new Schedule(newBooking.getTime(), "booked", UserMapper.MAPPER.fromUser(newBooking.getUser()), newBooking.getUser().getSection().getShortName());
+
         return new ResponseEntity<>(new ApiResponse(true, "Booking successfully added", new HashMap<>() {{
-            put("booking", BookingMapper.MAPPER.toBookingDto(bookingService.saveBooking(booking)));
+            put("booking", schedule);
         }}, null), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> updateBooking(@PathVariable int id, @RequestBody Booking booking) {
-        booking.setId(id);
-        return ResponseEntity.ok().body(new ApiResponse(true, "Booking successfully updated", new HashMap<>() {{
-            put("booking", bookingService.updateBooking(booking));
-        }}, null));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse> deleteBooking(@PathVariable int id) {
-        bookingService.deleteBooking(id);
+    @Operation(summary = "Delete booking from room")
+    @DeleteMapping
+    @Secured("USER")
+    public ResponseEntity<ApiResponse> deleteBooking(@RequestBody BookingDeleteDto deleteDto) {
+        bookingService.deleteBooking(deleteDto);
         return ResponseEntity.ok().body(new ApiResponse(true, "Booking successfully deleted", null, null));
     }
 

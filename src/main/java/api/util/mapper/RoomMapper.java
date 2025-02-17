@@ -1,9 +1,8 @@
 package api.util.mapper;
 
-import api.dto.RoomDto;
+import api.dto.get.RoomDto;
 import api.entity.Room;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;

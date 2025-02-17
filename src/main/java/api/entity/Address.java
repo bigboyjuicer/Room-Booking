@@ -1,7 +1,9 @@
 package api.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "address")
@@ -13,18 +15,25 @@ public class Address {
     private int id;
 
     @NotNull(message = "Cannot be null")
+    @NotEmpty(message = "Cannot be empty")
+    @Size(min = 2, message = "Length cannot be less than 2")
     @Column(name = "region")
     private String region;
 
     @NotNull(message = "Cannot be null")
+    @NotEmpty(message = "Cannot be empty")
+    @Size(min = 2, message = "Length cannot be less than 2")
     @Column(name = "city")
     private String city;
 
     @NotNull(message = "Cannot be null")
+    @NotEmpty(message = "Cannot be empty")
+    @Size(min = 2, message = "Length cannot be less than 2")
     @Column(name = "street")
     private String street;
 
     @NotNull(message = "Cannot be null")
+    @NotEmpty(message = "Cannot be empty")
     @Column(name = "building")
     private String building;
 
@@ -40,43 +49,35 @@ public class Address {
         this.id = id;
     }
 
-    public String getRegion() {
+    public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") @Size(min = 2) String getRegion() {
         return region;
     }
 
-    public void setRegion(String region) {
+    public void setRegion(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") @Size(min = 2) String region) {
         this.region = region;
     }
 
-    public String getCity() {
+    public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") @Size(min = 2) String getCity() {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") @Size(min = 2) String city) {
         this.city = city;
     }
 
-    public String getStreet() {
+    public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") @Size(min = 2) String getStreet() {
         return street;
     }
 
-    public void setStreet(String street) {
+    public void setStreet(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") @Size(min = 2) String street) {
         this.street = street;
     }
 
-    public String getBuilding() {
+    public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String getBuilding() {
         return building;
     }
 
-    public void setBuilding(String building) {
+    public void setBuilding(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String building) {
         this.building = building;
     }
-
-    /*public Room getRoom() {
-        return room;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
-    }*/
 }

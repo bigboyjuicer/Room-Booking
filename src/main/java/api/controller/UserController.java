@@ -1,6 +1,6 @@
 package api.controller;
 
-import api.dto.UserDto;
+import api.dto.get.UserProfileDto;
 import api.entity.User;
 import api.service.UserService;
 import api.util.ApiResponse;
@@ -31,7 +31,7 @@ public class UserController {
     @Secured("ADMIN")
     public ResponseEntity<ApiResponse> getAllUsers() {
         //List<User> users = userService.getAllUsers();
-        List<UserDto> users = UserMapper.MAPPER.fromUsers(userService.getAllUsers());
+        List<UserProfileDto> users = UserMapper.MAPPER.fromUsers(userService.getAllUsers());
         if (users.isEmpty()) {
             return ResponseEntity.ok().body(new ApiResponse(true, "There are no users", null, null));
         } else {
@@ -43,13 +43,15 @@ public class UserController {
     }
 
     @GetMapping("/me")
+    @Secured("USER")
     public ResponseEntity<ApiResponse> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDto currentUser = UserMapper.MAPPER.fromUser((User) authentication.getPrincipal());
+        UserProfileDto currentUser = UserMapper.MAPPER.fromUser((User) authentication.getPrincipal());
         return ResponseEntity.ok().body(new ApiResponse(true, "Successfully got current user", new HashMap<>() {{ put("user", currentUser); }}, null));
     }
 
     @DeleteMapping("/me/delete")
+    @Secured("USER")
     public ResponseEntity<ApiResponse> deleteUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) authentication.getPrincipal();
