@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+
+-- changeset Maksim Zinin:create-address
 CREATE TABLE IF NOT EXISTS address(
     id serial PRIMARY KEY,
     region varchar(255) not null,
@@ -7,7 +10,9 @@ CREATE TABLE IF NOT EXISTS address(
 
     UNIQUE(city, street, building)
 );
+-- rollback DROP TABLE address;
 
+-- changeset Maksim Zinin:create-rooms
 CREATE TABLE IF NOT EXISTS rooms(
     id serial PRIMARY KEY,
     capacity int not null,
@@ -18,7 +23,9 @@ CREATE TABLE IF NOT EXISTS rooms(
 
     CONSTRAINT address_fk FOREIGN KEY (address) REFERENCES address(id) ON DELETE CASCADE
 );
+-- rollback DROP TABLE rooms;
 
+-- changeset Maksim Zinin:create-weekdays
 CREATE TABLE IF NOT EXISTS weekdays(
     id serial primary key,
     day integer not null,
@@ -30,19 +37,25 @@ CREATE TABLE IF NOT EXISTS weekdays(
     UNIQUE(day, room),
     CONSTRAINT room_fk FOREIGN KEY (room) REFERENCES rooms(id) ON DELETE CASCADE
 );
+-- rollback DROP TABLE weekdays;
 
+-- changeset Maksim Zinin:create-sections
 CREATE TABLE IF NOT EXISTS sections(
     id serial primary key,
     name varchar(255) not null,
     short_name varchar(255) not null,
     UNIQUE(name)
-);
+    );
+-- rollback DROP TABLE sections;
 
+-- changeset Maksim Zinin:create-settings
 CREATE TABLE IF NOT EXISTS settings(
     id serial primary key,
     theme varchar(255) not null
-);
+    );
+-- rollback DROP TABLE settings;
 
+-- changeset Maksim Zinin:create-users
 CREATE TABLE IF NOT EXISTS users(
     email varchar(255) primary key,
     first_name varchar(255) not null,
@@ -58,7 +71,9 @@ CREATE TABLE IF NOT EXISTS users(
     CONSTRAINT section_fk FOREIGN KEY (section) REFERENCES sections(id) ON DELETE CASCADE,
     CONSTRAINT settings_fk FOREIGN KEY (settings) REFERENCES settings(id) ON DELETE CASCADE
 );
+-- rollback DROP TABLE users;
 
+-- changeset Maksim Zinin:create-authorities
 CREATE TABLE IF NOT EXISTS authorities(
     id serial primary key,
     email varchar(50) not null,
@@ -67,17 +82,21 @@ CREATE TABLE IF NOT EXISTS authorities(
     UNIQUE(email, authority),
     CONSTRAINT email_fk FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
 );
+-- rollback DROP TABLE authorities;
 
+-- changeset Maksim Zinin:create-refresh_tokens
 CREATE TABLE IF NOT EXISTS refresh_tokens(
-     id serial primary key,
-     email varchar(255) not null,
-     refresh_token varchar(255) not null,
+    id serial primary key,
+    email varchar(255) not null,
+    refresh_token varchar(255) not null,
 
-     UNIQUE(email),
-     UNIQUE(refresh_token),
-     CONSTRAINT email_fk FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
+    UNIQUE(email),
+    UNIQUE(refresh_token),
+    CONSTRAINT email_fk FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
 );
+-- rollback DROP TABLE refresh_tokens;
 
+-- changeset Maksim Zinin:create-bookings
 CREATE TABLE IF NOT EXISTS bookings(
     id serial primary key,
     room int not null,
@@ -88,18 +107,4 @@ CREATE TABLE IF NOT EXISTS bookings(
     CONSTRAINT room_fk FOREIGN KEY (room) REFERENCES rooms(id) ON DELETE CASCADE,
     CONSTRAINT email_fk FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
 );
-
-CREATE OR REPLACE FUNCTION add_authority() RETURNS TRIGGER AS '
-    BEGIN
-        INSERT INTO authorities (email, authority) VALUES (NEW.email, ''USER'');
-        RETURN NEW;
-    END;
-' LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS trigger_add_authority on "public"."users";
-
-CREATE TRIGGER trigger_add_authority
-    AFTER INSERT
-    ON users
-    FOR EACH ROW
-    EXECUTE FUNCTION add_authority();
+-- rollback DROP TABLE bookings;
