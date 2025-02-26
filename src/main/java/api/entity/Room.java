@@ -37,8 +37,8 @@ public class Room {
     private boolean isActive = true;
 
     @Column(name = "image_path")
-    @NotNull(message = "Cannot be null")
-    @NotEmpty(message = "Cannot be empty")
+    //@NotNull(message = "Cannot be null")
+    //@NotEmpty(message = "Cannot be empty")
     private String imagePath;
 
     @Valid
@@ -88,11 +88,11 @@ public class Room {
         isActive = active;
     }
 
-    public @NotEmpty(message = "Cannot be empty") String getImagePath() {
+    public String getImagePath() {
         return imagePath;
     }
 
-    public void setImagePath(@NotEmpty(message = "Cannot be empty") String imagePath) {
+    public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
     }
 

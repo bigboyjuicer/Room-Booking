@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +21,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User {
     @Id
     @NotNull(message = "Cannot be null")
     @NotEmpty(message = "Cannot be empty")
@@ -35,27 +37,30 @@ public class User implements UserDetails {
 
     @NotNull(message = "Cannot be null")
     @NotEmpty(message = "Cannot be empty")
+    @Size(min = 2, message = "Number of characters must be greater than 1")
     @Column(name = "last_name")
     private String lastName;
 
     @NotNull(message = "Cannot be null")
     @NotEmpty(message = "Cannot be empty")
+    @Size(min = 6, message = "Number of characters must be greater than 5")
     @Column(name = "password")
     private String password;
 
     @Valid
     @JsonBackReference
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "section")
-    @NotNull(message = "Cannot be null")
-    private Section section;
+    @ManyToOne
+    @JoinColumn(name = "department")
+    private Department department;
 
-    @Valid
-    @JsonBackReference
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "settings")
+    @Column(name = "image_path")
+    private String image;
+
+    @JoinColumn(name = "theme")
     @NotNull(message = "Cannot be null")
-    private Settings settings;
+    @Enumerated(EnumType.STRING)
+    @JdbcType(value = PostgreSQLEnumJdbcType.class)
+    private Theme theme = Theme.System;
 
     /*@Valid
     @JsonBackReference
@@ -81,18 +86,10 @@ public class User implements UserDetails {
     @Column(name = "is_enabled")
     private boolean isEnabled = true;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        for(Role role : this.roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getAuthority()));
-        }
-        return authorities;
-    }
-
-    @Override
-    public String getUsername() {
-        return getEmail();
+    public enum Theme {
+        System,
+        Dark,
+        Light
     }
 
     public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String getEmail() {
@@ -111,6 +108,14 @@ public class User implements UserDetails {
         this.firstName = firstName;
     }
 
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
     public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String getLastName() {
         return lastName;
     }
@@ -127,20 +132,22 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public @NotNull(message = "Cannot be null") Section getSection() {
-        return section;
+    public Department getDepartment() {
+        return department;
     }
 
-    public void setSection(@NotNull(message = "Cannot be null") Section section) {
-        this.section = section;
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
-    public @NotNull(message = "Cannot be null") Settings getSettings() {
-        return settings;
+
+
+    public @NotNull(message = "Cannot be null") Theme getTheme() {
+        return theme;
     }
 
-    public void setSettings(@NotNull(message = "Cannot be null") Settings settings) {
-        this.settings = settings;
+    public void setTheme(@NotNull(message = "Cannot be null") Theme theme) {
+        this.theme = theme;
     }
 
     public @Valid List<Role> getRoles() {
@@ -151,7 +158,6 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    @Override
     public boolean isAccountNonExpired() {
         return isAccountNonExpired;
     }
@@ -160,7 +166,6 @@ public class User implements UserDetails {
         isAccountNonExpired = accountNonExpired;
     }
 
-    @Override
     public boolean isAccountNonLocked() {
         return isAccountNonLocked;
     }
@@ -169,7 +174,6 @@ public class User implements UserDetails {
         isAccountNonLocked = accountNonLocked;
     }
 
-    @Override
     public boolean isCredentialsNonExpired() {
         return isCredentialsNonExpired;
     }
@@ -178,7 +182,6 @@ public class User implements UserDetails {
         isCredentialsNonExpired = credentialsNonExpired;
     }
 
-    @Override
     public boolean isEnabled() {
         return isEnabled;
     }
@@ -191,11 +194,28 @@ public class User implements UserDetails {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return isAccountNonExpired() == user.isAccountNonExpired() && isAccountNonLocked() == user.isAccountNonLocked() && isCredentialsNonExpired() == user.isCredentialsNonExpired() && isEnabled() == user.isEnabled() && Objects.equals(getEmail(), user.getEmail()) && Objects.equals(getFirstName(), user.getFirstName()) && Objects.equals(getLastName(), user.getLastName()) && Objects.equals(getPassword(), user.getPassword()) && Objects.equals(getSection(), user.getSection()) && Objects.equals(getSettings(), user.getSettings()) && Objects.equals(getRoles(), user.getRoles());
+        return isAccountNonExpired() == user.isAccountNonExpired() && isAccountNonLocked() == user.isAccountNonLocked() && isCredentialsNonExpired() == user.isCredentialsNonExpired() && isEnabled() == user.isEnabled() && Objects.equals(getEmail(), user.getEmail()) && Objects.equals(getFirstName(), user.getFirstName()) && Objects.equals(getLastName(), user.getLastName()) && Objects.equals(getPassword(), user.getPassword()) && Objects.equals(getDepartment(), user.getDepartment()) && getTheme() == user.getTheme() && Objects.equals(getRoles(), user.getRoles());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getEmail(), getFirstName(), getLastName(), getPassword(), getSection(), getSettings(), getRoles(), isAccountNonExpired(), isAccountNonLocked(), isCredentialsNonExpired(), isEnabled());
+        return Objects.hash(getEmail(), getFirstName(), getLastName(), getPassword(), getDepartment(), getTheme(), getRoles(), isAccountNonExpired(), isAccountNonLocked(), isCredentialsNonExpired(), isEnabled());
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", password='" + password + '\'' +
+                ", department=" + department +
+                ", theme=" + theme +
+                ", roles=" + roles +
+                ", isAccountNonExpired=" + isAccountNonExpired +
+                ", isAccountNonLocked=" + isAccountNonLocked +
+                ", isCredentialsNonExpired=" + isCredentialsNonExpired +
+                ", isEnabled=" + isEnabled +
+                '}';
     }
 }

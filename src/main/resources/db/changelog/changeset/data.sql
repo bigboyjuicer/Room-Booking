@@ -18,18 +18,13 @@ INSERT INTO weekdays(day, is_active, room) VALUES (6, false, 1);
 INSERT INTO weekdays(day, is_active, room) VALUES (7, false, 1);
 -- rollback DELETE FROM weekdays;
 
--- changeset Maksim Zinin:insert-sections
-INSERT INTO sections(name, short_name) VALUES ('Development and Operations', 'DevOps');
-INSERT INTO sections(name, short_name) VALUES ('Information Technology', 'IT');
--- rollback DELETE FROM sections;
-
--- changeset Maksim Zinin:insert-settings
-INSERT INTO settings(theme) VALUES ('Default');
--- rollback DELETE FROM settings;
+-- changeset Maksim Zinin:insert-departments
+INSERT INTO departments(name, short_name, color) VALUES ('Development and Operations', 'DevOps', 'red');
+INSERT INTO departments(name, short_name, color) VALUES ('Information Technology', 'IT', 'blue');
+-- rollback DELETE FROM departments;
 
 -- changeset Maksim Zinin:inset-users
-INSERT INTO users(email, first_name, last_name, password, section, settings) VALUES ('m.zinin@inbox.ru', 'Maksim', 'Zinin', '$2a$12$1uXSj1ddft2Keu0qzO7z2uIoK3/pzLHT68XzodIDcW8pGwlWNVrA.', 2, 1);
-INSERT INTO users(email, first_name, last_name, password, section, settings) VALUES ('bigboyjuicer@vk.com', 'BigBoy', 'Juicer', '$2a$12$1uXSj1ddft2Keu0qzO7z2uIoK3/pzLHT68XzodIDcW8pGwlWNVrA.', 1, 1);
+INSERT INTO users(email, first_name, last_name, password, department, theme) VALUES ('m.zinin@inbox.ru', 'Maksim','Zinin','$2a$12$1uXSj1ddft2Keu0qzO7z2uIoK3/pzLHT68XzodIDcW8pGwlWNVrA.', 2, 'System');
 -- rollback DELETE FROM users;
 
 -- changeset Maksim Zinin:insert-authorities
@@ -38,5 +33,4 @@ INSERT INTO authorities(email, authority) VALUES ('m.zinin@inbox.ru', 'ADMIN');
 
 -- changeset Maksim Zinin:insert-refresh_tokens
 INSERT INTO refresh_tokens(email, refresh_token) VALUES ('m.zinin@inbox.ru', '123');
-INSERT INTO refresh_tokens(email, refresh_token) VALUES ('bigboyjuicer@vk.com', '1234');
 -- rollback DELETE FROM refresh_tokens;

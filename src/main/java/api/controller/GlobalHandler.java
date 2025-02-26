@@ -2,10 +2,10 @@ package api.controller;
 
 import api.util.ApiResponse;
 import io.jsonwebtoken.ExpiredJwtException;
-import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,13 +29,17 @@ public class GlobalHandler {
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<ApiResponse> handleInvalidFormatException(ExpiredJwtException ex) {
-        return ResponseEntity.badRequest().body(new ApiResponse(false, "JWT is expired", null, null));
+    public ResponseEntity<ApiResponse> handleExpiredJwtException(ExpiredJwtException ex) {
+        return new ResponseEntity<>(new ApiResponse(false, "JWT is expired", null, null), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiResponse> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        return new ResponseEntity<>(new ApiResponse(false, "Access denied", null, null), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse> handleInvalidFormatException(Exception ex) {
+    public ResponseEntity<ApiResponse> handleException(Exception ex) {
         return ResponseEntity.badRequest().body(new ApiResponse(false, ex.getMessage(), null, null));
     }
-
 }

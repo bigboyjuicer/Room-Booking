@@ -4,6 +4,7 @@ import api.dto.get.Day;
 import api.dto.get.Pagination;
 import api.entity.Room;
 import api.service.RoomService;
+import api.util.Images;
 import api.util.exception.RoomNotFoundException;
 import api.repository.RoomRepository;
 import org.springframework.data.domain.Sort;
@@ -58,21 +59,9 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Room saveRoom(Room room, MultipartFile image) throws IOException {
-        String imagePath = saveImage(image);
+        String imagePath = Images.saveImage(image);
         room.setImagePath(imagePath);
         return roomRepository.save(room);
-    }
-
-    private String saveImage(MultipartFile image) throws IOException {
-        File uploadPath = new File(UPLOAD_DIR);
-        if (!uploadPath.exists()) {
-            uploadPath.mkdirs();
-        }
-        String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-        File targetFile = new File(uploadPath, fileName);
-        image.transferTo(targetFile.getAbsoluteFile());
-
-        return UPLOAD_DIR + fileName;
     }
 
     public List<Day> getAvailableDaysInRoom(int id, Pagination pagination) {
@@ -112,7 +101,7 @@ public class RoomServiceImpl implements RoomService {
     public Path updateRoomImage(MultipartFile image, int id) throws IOException {
         if (roomRepository.findById(id).isPresent()) {
             Room room = roomRepository.findById(id).get();
-            String newPath = saveImage(image);
+            String newPath = Images.saveImage(image);
             if(room.getImagePath() != null) {
                 Files.deleteIfExists(Paths.get(room.getImagePath()));
             }

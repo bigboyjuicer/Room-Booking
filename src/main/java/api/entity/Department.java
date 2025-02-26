@@ -1,14 +1,16 @@
 package api.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "sections")
-public class Section {
+@Table(name = "departments")
+public class Department {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,9 +27,14 @@ public class Section {
     @Column(name = "short_name")
     private String shortName;
 
-    /*@JsonManagedReference
-    @OneToMany(mappedBy = "section", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    List<User> users;*/
+    @NotNull(message = "Cannot be null")
+    @NotEmpty(message = "Cannot be empty")
+    @Column(name = "color")
+    private String color;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
+    List<User> users;
 
     public int getId() {
         return id;
@@ -53,11 +60,27 @@ public class Section {
         this.shortName = shortName;
     }
 
+    public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String getColor() {
+        return color;
+    }
+
+    public void setColor(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String color) {
+        this.color = color;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Section section = (Section) o;
-        return id == section.id && Objects.equals(name, section.name) && Objects.equals(shortName, section.shortName);
+        Department department = (Department) o;
+        return id == department.id && Objects.equals(name, department.name) && Objects.equals(shortName, department.shortName);
     }
 
     @Override

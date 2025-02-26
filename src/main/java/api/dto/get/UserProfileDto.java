@@ -1,8 +1,9 @@
 package api.dto.get;
 
-import api.entity.Section;
-import api.entity.Settings;
+import api.entity.Department;
+import api.entity.User;
 import api.util.annotation.ValidEmail;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,23 +22,14 @@ public class UserProfileDto {
 
     @NotNull(message = "Cannot be null")
     @NotEmpty(message = "Cannot be empty")
+    @Size(min = 2, message = "Number of characters must be greater than 1")
     private String lastName;
 
-    @NotNull(message = "Cannot be null")
-    private Section section;
+    @Valid
+    private Department department;
 
     @NotNull(message = "Cannot be null")
-    private Settings settings;
-
-    @NotEmpty(message = "Cannot be empty")
-    private String image;
-
-    public UserProfileDto(String email, String firstName, String lastName, String image) {
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.image = image;
-    }
+    private User.Theme theme;
 
     public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String getEmail() {
         return email;
@@ -55,35 +47,27 @@ public class UserProfileDto {
         this.firstName = firstName;
     }
 
-    public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String getLastName() {
+    public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") @Size(min = 2, message = "Number of characters must be greater than 1") String getLastName() {
         return lastName;
     }
 
-    public void setLastName(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String lastName) {
+    public void setLastName(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") @Size(min = 2, message = "Number of characters must be greater than 1") String lastName) {
         this.lastName = lastName;
     }
 
-    public @NotNull(message = "Cannot be null") Section getSection() {
-        return section;
+    public @Valid Department getDepartment() {
+        return department;
     }
 
-    public void setSection(@NotNull(message = "Cannot be null") Section section) {
-        this.section = section;
+    public void setDepartment(@Valid Department department) {
+        this.department = department;
     }
 
-    public @NotNull(message = "Cannot be null") Settings getSettings() {
-        return settings;
+    public @NotNull(message = "Cannot be null") User.Theme getTheme() {
+        return theme;
     }
 
-    public void setSettings(@NotNull(message = "Cannot be null") Settings settings) {
-        this.settings = settings;
-    }
-
-    public @NotEmpty(message = "Cannot be empty") String getImage() {
-        return image;
-    }
-
-    public void setImage(@NotEmpty(message = "Cannot be empty") String image) {
-        this.image = image;
+    public void setTheme(@NotNull(message = "Cannot be null") User.Theme theme) {
+        this.theme = theme;
     }
 }

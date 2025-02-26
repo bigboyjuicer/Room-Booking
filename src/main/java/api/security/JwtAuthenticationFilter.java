@@ -1,4 +1,4 @@
-package api.config;
+package api.security;
 
 import api.service.JWTService;
 import jakarta.servlet.FilterChain;
@@ -40,29 +40,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
         try {
             String accessToken = authHeader.substring(7);
             String userEmail = jwtService.extractEmail(accessToken);
-
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
             if(userEmail != null && authentication == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-
                 if(jwtService.isAccessTokenValid(accessToken, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
-
             }
-
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             handlerExceptionResolver.resolveException(request, response, null, e);
         }
-
     }
 }

@@ -1,6 +1,6 @@
 package api.controller;
 
-import api.entity.Section;
+import api.entity.Department;
 import api.service.SectionService;
 import api.util.ApiResponse;
 import api.util.exception.SectionNotFoundException;
@@ -28,12 +28,12 @@ public class SectionController {
     @GetMapping
     @Secured("ADMIN")
     public ResponseEntity<ApiResponse> getAllSections() {
-        List<Section> sections = sectionService.getAllSections();
-        if (sections.isEmpty()) {
+        List<Department> departments = sectionService.getAllSections();
+        if (departments.isEmpty()) {
             return ResponseEntity.ok().body(new ApiResponse(true, "There are no sections", null, null));
         } else {
             return ResponseEntity.ok().body(new ApiResponse(true, "All sections successfully found", new HashMap<>() {{
-                put("sections", sections);
+                put("sections", departments);
             }}, null));
         }
     }
@@ -42,28 +42,28 @@ public class SectionController {
     @GetMapping("/{id}")
     @Secured("ADMIN")
     public ResponseEntity<ApiResponse> getSectionById(@PathVariable int id) {
-        Section section = sectionService.getSectionById(id);
+        Department department = sectionService.getSectionById(id);
         return ResponseEntity.ok().body(new ApiResponse(true, "Section successfully found", new HashMap<>() {{
-            put("section", section);
+            put("section", department);
         }}, null));
     }
 
     @Operation(summary = "Add new section")
     @PostMapping
     @Secured("ADMIN")
-    public ResponseEntity<ApiResponse> addSection(@Valid @RequestBody Section section) {
+    public ResponseEntity<ApiResponse> addSection(@Valid @RequestBody Department department) {
         return new ResponseEntity<>(new ApiResponse(true, "Section successfully added", new HashMap<>() {{
-            put("section", sectionService.save(section));
+            put("section", sectionService.save(department));
         }}, null), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Update existing section")
     @PutMapping("/{id}")
     @Secured("ADMIN")
-    public ResponseEntity<ApiResponse> updateSection(@PathVariable int id, @RequestBody Section section) {
-        section.setId(id);
+    public ResponseEntity<ApiResponse> updateSection(@PathVariable int id, @RequestBody Department department) {
+        department.setId(id);
         return ResponseEntity.ok().body(new ApiResponse(true, "Sections successfully updated", new HashMap<>() {{
-            put("section", sectionService.update(section));
+            put("section", sectionService.update(department));
         }}, null));
     }
 

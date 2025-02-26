@@ -82,4 +82,12 @@ public class Weekday {
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
 }

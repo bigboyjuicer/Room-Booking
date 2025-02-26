@@ -44,7 +44,7 @@ public class BookingController {
     @Secured("USER")
     public ResponseEntity<ApiResponse> addBooking(@RequestBody BookingCreateDto booking) {
         Booking newBooking = bookingService.saveBooking(booking);
-        Schedule schedule = new Schedule(newBooking.getTime(), "booked", UserMapper.MAPPER.fromUser(newBooking.getUser()), newBooking.getUser().getSection().getShortName());
+        Schedule schedule = new Schedule(newBooking.getTime(), "booked", UserMapper.MAPPER.fromUser(newBooking.getUser()), newBooking.getUser().getDepartment().getShortName());
 
         return new ResponseEntity<>(new ApiResponse(true, "Booking successfully added", new HashMap<>() {{
             put("booking", schedule);

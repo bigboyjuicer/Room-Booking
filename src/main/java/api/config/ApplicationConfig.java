@@ -1,6 +1,7 @@
 package api.config;
 
 import api.repository.UserRepository;
+import api.security.MyUserDetails;
 import api.util.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +28,7 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return email -> userRepository.findById(email).orElseThrow(() -> new UserNotFoundException("Email not found"));
+        return email -> new MyUserDetails(userRepository.findById(email).orElseThrow(() -> new UserNotFoundException("Email not found")));
     }
 
     @Bean

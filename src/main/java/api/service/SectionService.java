@@ -1,13 +1,13 @@
 package api.service;
 
-import api.entity.Section;
+import api.entity.Department;
 
 import java.util.List;
 
 public interface SectionService {
-    List<Section> getAllSections();
-    Section getSectionById(int id);
-    Section save(Section section);
-    Section update(Section section);
+    List<Department> getAllSections();
+    Department getSectionById(int id);
+    Department save(Department department);
+    Department update(Department department);
     void delete(int id);
 }

@@ -1,6 +1,6 @@
 package api.service.implementations;
 
-import api.entity.Section;
+import api.entity.Department;
 import api.repository.SectionRepository;
 import api.service.SectionService;
 import api.util.exception.SectionNotFoundException;
@@ -19,13 +19,13 @@ public class SectionServiceImpl implements SectionService {
     }
 
     @Override
-    public List<Section> getAllSections() {
+    public List<Department> getAllSections() {
         return sectionRepository.findAll();
     }
 
     @Override
-    public Section getSectionById(int id) {
-        Optional<Section> section = sectionRepository.findById(id);
+    public Department getSectionById(int id) {
+        Optional<Department> section = sectionRepository.findById(id);
         if(section.isPresent()) {
             return section.get();
         } else {
@@ -34,14 +34,14 @@ public class SectionServiceImpl implements SectionService {
     }
 
     @Override
-    public Section save(Section section) {
-        return sectionRepository.save(section);
+    public Department save(Department department) {
+        return sectionRepository.save(department);
     }
 
     @Override
-    public Section update(Section section) {
-        if(sectionRepository.existsById(section.getId())) {
-            return sectionRepository.save(section);
+    public Department update(Department department) {
+        if(sectionRepository.existsById(department.getId())) {
+            return sectionRepository.save(department);
         } else {
             throw new SectionNotFoundException("Section with this id not found");
         }

@@ -23,13 +23,13 @@ public class JWTServiceImpl implements JWTService {
 
     private final RefreshTokenService refreshTokenService;
 
-    @Value("${security.jwt.secret-key}")
+    @Value("${JWT_SECRET_KEY}")
     private final String secretKey;
 
-    @Value("${security.access.expiration-time}")
+    @Value("${JWT_ACCESS_EXPIRATION}")
     private final long accessExpiration;
 
-    @Value("${security.refresh.expiration-time}")
+    @Value("${JWT_REFRESH_EXPIRATION}")
     private final long refreshExpiration;
 
     public JWTServiceImpl(RefreshTokenService refreshTokenService) {

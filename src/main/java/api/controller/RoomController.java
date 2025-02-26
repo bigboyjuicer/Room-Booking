@@ -3,13 +3,11 @@ package api.controller;
 import api.dto.get.Day;
 import api.dto.get.Pagination;
 import api.dto.get.RoomDto;
-import api.dto.post.RoomCreateDto;
 import api.entity.Room;
 import api.util.exception.RoomNotFoundException;
 import api.service.RoomService;
 import api.util.ApiResponse;
 import api.util.mapper.RoomMapper;
-import api.util.mapper.RoomCreateMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -43,7 +41,7 @@ public class RoomController {
     public ResponseEntity<ApiResponse> getAllRooms(@RequestBody(required = false) ObjectNode objectNode) {
         String filter = objectNode == null ? null : objectNode.get("filter") == null ? null : objectNode.get("filter").asText();
         List<RoomDto> rooms = RoomMapper.MAPPER.fromRooms(roomService.getAllRooms(filter));
-        if(rooms.isEmpty()) {
+        if (rooms.isEmpty()) {
             return ResponseEntity.ok().body(new ApiResponse(true, "There are no rooms", null, null));
         } else {
             Map<String, Object> data = new HashMap<>() {{
@@ -79,7 +77,7 @@ public class RoomController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
-        if(resource.exists() || resource.isReadable()) {
+        if (resource.exists() || resource.isReadable()) {
             return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(resource);
         } else {
             return ResponseEntity.notFound().build();
@@ -89,10 +87,10 @@ public class RoomController {
     @Operation(summary = "Create new room")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Secured("ADMIN")
-    public ResponseEntity<ApiResponse> addRoom(@Valid @RequestPart("room") RoomCreateDto room, @RequestPart("image") MultipartFile image) {
+    public ResponseEntity<ApiResponse> addRoom(@Valid @RequestPart("room") Room room, @RequestPart("image") MultipartFile image) {
         try {
             Map<String, Object> data = new HashMap<>() {{
-                put("room", RoomMapper.MAPPER.toRoomDto(roomService.saveRoom(RoomCreateMapper.MAPPER.toRoom(room), image)));
+                put("room", RoomMapper.MAPPER.toRoomDto(roomService.saveRoom(room, image)));
             }};
             return new ResponseEntity<>(new ApiResponse(true, "Room successfully added", data, null), HttpStatus.CREATED);
         } catch (IOException ex) {

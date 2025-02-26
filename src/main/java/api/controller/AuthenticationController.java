@@ -3,15 +3,18 @@ package api.controller;
 import api.dto.post.LoginUserDto;
 import api.dto.post.RegisterUserDto;
 import api.dto.get.UserProfileDto;
-import api.entity.User;
+import api.security.MyUserDetails;
 import api.service.AuthenticationService;
 import api.service.JWTService;
 import api.util.ApiResponse;
 import api.util.exception.RefreshTokenNotValidException;
+import api.util.exception.UserAlreadyExistsException;
 import api.util.mapper.LoginUserMapper;
 import api.util.mapper.RegisterUserMapper;
 import api.util.mapper.UserMapper;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -36,15 +39,17 @@ public class AuthenticationController {
         this.userDetailsService = userDetailsService;
     }
 
+    @Operation(summary = "Register new user")
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse> signup(@RequestBody RegisterUserDto registerUserDto) {
+    public ResponseEntity<ApiResponse> signup(@Valid @RequestBody RegisterUserDto registerUserDto) {
         UserProfileDto registeredUser = UserMapper.MAPPER.fromUser(authenticationService.signup(RegisterUserMapper.MAPPER.toUser(registerUserDto)));
         return ResponseEntity.ok().body(new ApiResponse(true, "Successfully registered", new HashMap<>() {{ put("user", registeredUser); }}, null));
     }
 
+    @Operation(summary = "Login into account")
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody LoginUserDto loginUserDto) {
-        User authenticatedUser = authenticationService.authenticate(LoginUserMapper.MAPPER.toUser(loginUserDto));
+    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginUserDto loginUserDto) {
+        UserDetails authenticatedUser = new MyUserDetails(authenticationService.authenticate(LoginUserMapper.MAPPER.toUser(loginUserDto)));
         String accessToken = jwtService.generateAccessToken(authenticatedUser);
         String refreshToken = jwtService.generateRefreshToken(authenticatedUser);
 
@@ -80,7 +85,10 @@ public class AuthenticationController {
         } else {
             throw new RefreshTokenNotValidException("Cannot find refresh token");
         }
-
     }
 
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse> handleUserAlreadyExists(UserAlreadyExistsException ex) {
+        return ResponseEntity.badRequest().body(new ApiResponse(false, ex.getMessage(), null, null));
+    }
 }

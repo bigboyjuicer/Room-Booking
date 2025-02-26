@@ -1,7 +1,6 @@
 package api.service.implementations;
 
 import api.dto.delete.BookingDeleteDto;
-import api.dto.get.BookingDto;
 import api.dto.get.Schedule;
 import api.dto.get.UserProfileDto;
 import api.dto.post.BookingCreateDto;
@@ -12,8 +11,6 @@ import api.repository.BookingRepository;
 import api.repository.RoomRepository;
 import api.service.BookingService;
 import api.util.exception.*;
-import api.util.mapper.BookingMapper;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -57,7 +54,7 @@ public class BookingServiceImpl implements BookingService {
             String section = null;
             if(status.equals("booked")) {
                 //user = UserMapper.MAPPER.fromUser(bookings.stream().filter(b -> b.getTime().isEqual(time)).findFirst().get().getUser());
-                section = bookings.stream().filter(b -> b.getTime().isEqual(time)).findFirst().get().getUser().getSection().getShortName();
+                section = bookings.stream().filter(b -> b.getTime().isEqual(time)).findFirst().get().getUser().getDepartment().getShortName();
             }
             schedule.add(new Schedule(time, status, user, section));
         }

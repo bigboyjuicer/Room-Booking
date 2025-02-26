@@ -1,5 +1,6 @@
 package api.config;
 
+import api.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -42,7 +43,6 @@ public class SecurityConfig {
                         .requestMatchers("v3/**")
                         .permitAll()
                         .anyRequest()
-                        //.permitAll()
                         .authenticated()
                 )
                 .authenticationProvider(authenticationProvider)

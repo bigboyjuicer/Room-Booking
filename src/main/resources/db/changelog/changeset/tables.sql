@@ -39,21 +39,20 @@ CREATE TABLE IF NOT EXISTS weekdays(
 );
 -- rollback DROP TABLE weekdays;
 
--- changeset Maksim Zinin:create-sections
-CREATE TABLE IF NOT EXISTS sections(
+-- changeset Maksim Zinin:create-departments
+CREATE TABLE IF NOT EXISTS departments(
     id serial primary key,
     name varchar(255) not null,
     short_name varchar(255) not null,
-    UNIQUE(name)
-    );
--- rollback DROP TABLE sections;
+    color varchar(100) not null,
 
--- changeset Maksim Zinin:create-settings
-CREATE TABLE IF NOT EXISTS settings(
-    id serial primary key,
-    theme varchar(255) not null
-    );
--- rollback DROP TABLE settings;
+    UNIQUE(name)
+);
+-- rollback DROP TABLE departments;
+
+-- changeset Maksim Zinin:create-type-theme
+CREATE TYPE theme AS ENUM('System', 'Light', 'Dark');
+-- rollback DROP TYPE theme;
 
 -- changeset Maksim Zinin:create-users
 CREATE TABLE IF NOT EXISTS users(
@@ -61,15 +60,15 @@ CREATE TABLE IF NOT EXISTS users(
     first_name varchar(255) not null,
     last_name varchar(255) not null,
     password varchar(255) not null,
-    section int not null,
+    department int,
+    image_path varchar(255),
     is_account_non_expired	boolean not null default(true),
     is_account_non_locked boolean not null default(true),
     is_credentials_non_expired boolean not null default(true),
     is_enabled boolean not null default(true),
-    settings int not null,
+    theme theme not null default('System'),
 
-    CONSTRAINT section_fk FOREIGN KEY (section) REFERENCES sections(id) ON DELETE CASCADE,
-    CONSTRAINT settings_fk FOREIGN KEY (settings) REFERENCES settings(id) ON DELETE CASCADE
+    CONSTRAINT department_fk FOREIGN KEY (department) REFERENCES departments(id) ON DELETE CASCADE
 );
 -- rollback DROP TABLE users;
 
