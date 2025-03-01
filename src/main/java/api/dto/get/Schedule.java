@@ -12,13 +12,13 @@ public class Schedule {
     private LocalDateTime time;
     private String status;
     private UserProfileDto user;
-    private String section;
+    private String department;
 
-    public Schedule(LocalDateTime time, String status, UserProfileDto user, String section) {
+    public Schedule(LocalDateTime time, String status, UserProfileDto user, String department) {
         this.time = time;
         this.status = status;
         this.user = user;
-        this.section = section;
+        this.department = department;
     }
 
     public LocalDateTime getTime() {
@@ -45,11 +45,11 @@ public class Schedule {
         this.user = user;
     }
 
-    public String getSection() {
-        return section;
+    public String getDepartment() {
+        return department;
     }
 
-    public void setSection(String section) {
-        this.section = section;
+    public void setDepartment(String department) {
+        this.department = department;
     }
 }

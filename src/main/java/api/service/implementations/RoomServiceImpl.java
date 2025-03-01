@@ -3,10 +3,13 @@ package api.service.implementations;
 import api.dto.get.Day;
 import api.dto.get.Pagination;
 import api.entity.Room;
+import api.service.BookingService;
 import api.service.RoomService;
 import api.util.Images;
 import api.util.exception.RoomNotFoundException;
 import api.repository.RoomRepository;
+import org.hibernate.query.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,16 +30,18 @@ public class RoomServiceImpl implements RoomService {
     private final String UPLOAD_DIR = "src/main/resources/static/images/";
 
     private final RoomRepository roomRepository;
+    private final BookingService bookingService;
 
-    public RoomServiceImpl(RoomRepository roomRepository) {
+    public RoomServiceImpl(RoomRepository roomRepository, BookingService bookingService) {
         this.roomRepository = roomRepository;
+        this.bookingService = bookingService;
     }
 
     @Override
-    public List<Room> getAllRooms(String filter) {
+    public List<Room> getAllRooms(String sort) {
         List<Room> rooms = new ArrayList<>();
-        if (filter != null && !filter.isEmpty()) {
-            switch (filter) {
+        if (sort != null && !sort.isEmpty()) {
+            switch (sort) {
                 case "capacity_asc" -> rooms = roomRepository.findAll(Sort.by(Sort.Direction.ASC, "capacity"));
                 case "capacity_desc" -> rooms = roomRepository.findAll(Sort.by(Sort.Direction.DESC, "capacity"));
                 case "name_asc" -> rooms = roomRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
@@ -83,15 +88,17 @@ public class RoomServiceImpl implements RoomService {
         List<Day> days = new ArrayList<>();
         LocalDate today = LocalDate.now();
 
-        today = today.plusDays((long) pagination.getSize() * pagination.getPage() - pagination.getSize());
+        today = today.plusDays((long) pagination.getSize() * pagination.getPage());
 
-        int offset = 0;
-        if(pagination.getPage() == 1) {
-            offset = getDayOfWeek() - 1;
-        }
+        int offset = today.getDayOfWeek().getValue() - 1;
 
         for (int i = offset; i < pagination.getSize() + offset; i++) {
-            days.add(new Day(today.toString(), room.getWeekdays().get(i % 7).isActive()));
+            if(room.getWeekdays().get(i % 7).isActive()) {
+                long slots = bookingService.getBookingsByRoomIdAndDate(room.getId(), today).stream().filter(b -> b.getStatus().equals("available")).count();
+                days.add(new Day(today, room.getWeekdays().get(i % 7).isActive(), slots));
+            } else {
+                days.add(new Day(today, room.getWeekdays().get(i % 7).isActive()));
+            }
             today = today.plusDays(1);
         }
         return days;

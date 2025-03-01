@@ -60,6 +60,7 @@ public class AuthenticationController {
         return ResponseEntity.ok().body(new ApiResponse(true, "Successfully logged in", data, null));
     }
 
+    @Operation(summary = "Refresh access-token via refresh-token")
     @GetMapping("/refresh")
     public ResponseEntity<ApiResponse> refresh(HttpServletRequest request) {
         String refreshToken = request.getHeader("Refresh-Token");

@@ -1,18 +1,24 @@
 package api.controller;
 
+import api.dto.get.Pagination;
 import api.dto.get.UserProfileDto;
 import api.dto.put.ChangePassword;
+import api.dto.put.UserUpdateDto;
+import api.entity.Booking;
 import api.entity.User;
 import api.security.MyUserDetails;
 import api.service.UserService;
 import api.util.ApiResponse;
+import api.util.MyPageable;
 import api.util.exception.WrongPasswordException;
+import api.util.mapper.BookingProfileMapper;
 import api.util.mapper.UserMapper;
 import api.util.exception.UserNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +69,16 @@ public class UserController {
         }}, null));
     }
 
+    @GetMapping("/me/bookings")
+    public ResponseEntity<ApiResponse> getBookings(Authentication authentication, @RequestBody Pagination pagination) {
+        User currentUser = ((MyUserDetails) authentication.getPrincipal()).getUser();
+        Page<Booking> bookings = userService.getUserBookings(currentUser, pagination);
+        return ResponseEntity.ok().body(new ApiResponse(true, "Successfully got current user's bookings", new HashMap<>() {{
+            put("bookings", BookingProfileMapper.MAPPER.fromBookings(bookings.getContent()));
+            put("pagination", MyPageable.build(bookings));
+        }}, null));
+    }
+
     @Operation(summary = "Get current user image")
     @GetMapping("/me/image")
     @Secured("USER")
@@ -105,7 +121,7 @@ public class UserController {
     @Operation(summary = "Update current user")
     @PutMapping("/me")
     @Secured("USER")
-    public ResponseEntity<ApiResponse> updateCurrentUser(@Valid @RequestBody UserProfileDto updatedUser, Authentication authentication) {
+    public ResponseEntity<ApiResponse> updateCurrentUser(@Valid @RequestBody UserUpdateDto updatedUser, Authentication authentication) {
         User currentUser = ((MyUserDetails) authentication.getPrincipal()).getUser();
 
         if (currentUser.getEmail().equals(updatedUser.getEmail())) {

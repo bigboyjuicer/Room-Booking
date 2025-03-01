@@ -2,72 +2,57 @@ package api.dto.get;
 
 import api.entity.Department;
 import api.entity.User;
-import api.util.annotation.ValidEmail;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import java.util.List;
 
 public class UserProfileDto {
 
-    @NotNull(message = "Cannot be null")
-    @NotEmpty(message = "Cannot be empty")
-    @ValidEmail(message = "Not valid email")
     private String email;
 
-    @NotNull(message = "Cannot be null")
-    @NotEmpty(message = "Cannot be empty")
-    @Size(min = 2, message = "Number of characters must be greater than 1")
     private String firstName;
 
-    @NotNull(message = "Cannot be null")
-    @NotEmpty(message = "Cannot be empty")
-    @Size(min = 2, message = "Number of characters must be greater than 1")
     private String lastName;
 
-    @Valid
     private Department department;
 
-    @NotNull(message = "Cannot be null")
     private User.Theme theme;
 
-    public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String getEmail() {
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") @Size(min = 2, message = "Number of characters must be greater than 1") String getFirstName() {
+    public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") @Size(min = 2, message = "Number of characters must be greater than 1") String firstName) {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    public @NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") @Size(min = 2, message = "Number of characters must be greater than 1") String getLastName() {
+    public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") @Size(min = 2, message = "Number of characters must be greater than 1") String lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    public @Valid Department getDepartment() {
+    public Department getDepartment() {
         return department;
     }
 
-    public void setDepartment(@Valid Department department) {
+    public void setDepartment(Department department) {
         this.department = department;
     }
 
-    public @NotNull(message = "Cannot be null") User.Theme getTheme() {
+    public User.Theme getTheme() {
         return theme;
     }
 
-    public void setTheme(@NotNull(message = "Cannot be null") User.Theme theme) {
+    public void setTheme(User.Theme theme) {
         this.theme = theme;
     }
 }

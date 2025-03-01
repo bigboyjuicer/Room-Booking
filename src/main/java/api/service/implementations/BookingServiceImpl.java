@@ -11,6 +11,8 @@ import api.repository.BookingRepository;
 import api.repository.RoomRepository;
 import api.service.BookingService;
 import api.util.exception.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -35,7 +37,9 @@ public class BookingServiceImpl implements BookingService {
     public List<Schedule> getBookingsByRoomIdAndDate(int roomId, LocalDate date) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException("Room with this id not found"));
 
-        if(!room.getWeekdays().get(getDayOfWeek(date) - 1).isActive()) throw new WeekdayIsNotActiveException("Room at this date is not active");
+        if(!room.getWeekdays().get(getDayOfWeek(date) - 1).isActive()){
+            throw new WeekdayIsNotActiveException("Room at this date is not active");
+        }
 
         return generateListOfBookings(room, bookingRepository.findBookingsByRoomIdAndDate(room, date).orElse(new ArrayList<>()), date);
     }
@@ -51,12 +55,13 @@ public class BookingServiceImpl implements BookingService {
             LocalDateTime time = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), i, 0, 0);
             String status = bookings.stream().anyMatch(b -> b.getTime().isEqual(time)) ? "booked" : "available";
             UserProfileDto user = null;
-            String section = null;
+            String department = null;
             if(status.equals("booked")) {
                 //user = UserMapper.MAPPER.fromUser(bookings.stream().filter(b -> b.getTime().isEqual(time)).findFirst().get().getUser());
-                section = bookings.stream().filter(b -> b.getTime().isEqual(time)).findFirst().get().getUser().getDepartment().getShortName();
+                Booking booking = bookings.stream().filter(b -> b.getTime().isEqual(time)).findFirst().get();
+                department = booking.getUser().getDepartment() == null ? "No department" : booking.getUser().getDepartment().getShortName();
             }
-            schedule.add(new Schedule(time, status, user, section));
+            schedule.add(new Schedule(time, status, user, department));
         }
         return schedule;
     }
@@ -70,16 +75,19 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking saveBooking(BookingCreateDto bookingCreateDto) {
+    public Page<Booking> getUserBookings(User user, LocalDate date, Pageable pageable) {
+        return bookingRepository.findUserBookings(user, date, pageable);
+    }
+
+    @Override
+    public Booking saveBooking(BookingCreateDto bookingCreateDto, User user) {
         Room room = roomRepository.findById(bookingCreateDto.getRoomId()).orElseThrow(() -> new RoomNotFoundException("Room with this id not found"));
 
         if(bookingRepository.findBookingByTimeAndRoom(bookingCreateDto.getTime(), room).isPresent()) throw new BookingIsExistException("Booking at this time already exists");
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         Booking booking = new Booking();
         booking.setRoom(room);
-        booking.setUser((User) authentication.getPrincipal());
+        booking.setUser(user);
 
         if(validateDateTime(bookingCreateDto.getTime(), room)) booking.setTime(bookingCreateDto.getTime());
         else throw new RoomNotActive("Room not active at this time");

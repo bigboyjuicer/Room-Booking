@@ -62,12 +62,9 @@ public class User {
     @JdbcType(value = PostgreSQLEnumJdbcType.class)
     private Theme theme = Theme.System;
 
-    /*@Valid
     @JsonBackReference
-    @OneToMany(mappedBy = "")
-    @JoinColumn(name = "settings")
-    @NotNull(message = "Cannot be null")
-    private List<Booking> bookings;*/
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Booking> bookings;
 
     @Valid
     @JsonManagedReference
@@ -140,8 +137,6 @@ public class User {
         this.department = department;
     }
 
-
-
     public @NotNull(message = "Cannot be null") Theme getTheme() {
         return theme;
     }
@@ -156,6 +151,14 @@ public class User {
 
     public void setRoles(@Valid List<Role> roles) {
         this.roles = roles;
+    }
+
+    public @Valid List<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(@Valid List<Booking> bookings) {
+        this.bookings = bookings;
     }
 
     public boolean isAccountNonExpired() {

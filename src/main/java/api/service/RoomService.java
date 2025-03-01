@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface RoomService {
 
-    List<Room> getAllRooms(String filter);
+    List<Room> getAllRooms(String sort);
     Room getRoomById(int id);
     Room saveRoom(Room room, MultipartFile image) throws IOException;
     Room updateRoom(Room room);

@@ -1,6 +1,9 @@
 package api.service;
 
+import api.dto.get.Pagination;
+import api.entity.Booking;
 import api.entity.User;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -11,6 +14,8 @@ public interface UserService {
     List<User> getAllUsers();
 
     User getUserByEmail(String email);
+
+    Page<Booking> getUserBookings(User user, Pagination pagination);
 
     User update(User user);
 

@@ -1,20 +1,27 @@
 package api.service.implementations;
 
+import api.dto.get.Pagination;
+import api.entity.Booking;
 import api.entity.User;
 import api.repository.UserRepository;
+import api.service.BookingService;
 import api.service.UserService;
 import api.util.Images;
 import api.util.exception.UserNotFoundException;
 import api.util.exception.WrongPasswordException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.print.Pageable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -22,10 +29,12 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final BookingService bookingService;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, BookingService bookingService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.bookingService = bookingService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -41,6 +50,11 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new UserNotFoundException("User with this email not found");
         }
+    }
+
+    @Override
+    public Page<Booking> getUserBookings(User user, Pagination pagination) {
+        return bookingService.getUserBookings(user, LocalDate.now(), PageRequest.of(pagination.getPage(), pagination.getSize()));
     }
 
     @Override

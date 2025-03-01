@@ -4,6 +4,7 @@ import api.dto.get.Day;
 import api.dto.get.Pagination;
 import api.dto.get.RoomDto;
 import api.entity.Room;
+import api.util.MyPageable;
 import api.util.exception.RoomNotFoundException;
 import api.service.RoomService;
 import api.util.ApiResponse;
@@ -12,6 +13,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.core.io.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +43,8 @@ public class RoomController {
     @GetMapping()
     @Secured("USER")
     public ResponseEntity<ApiResponse> getAllRooms(@RequestBody(required = false) ObjectNode objectNode) {
-        String filter = objectNode == null ? null : objectNode.get("filter") == null ? null : objectNode.get("filter").asText();
-        List<RoomDto> rooms = RoomMapper.MAPPER.fromRooms(roomService.getAllRooms(filter));
+        String sort = objectNode == null ? null : objectNode.get("sort") == null ? null : objectNode.get("sort").asText();
+        List<RoomDto> rooms = RoomMapper.MAPPER.fromRooms(roomService.getAllRooms(sort));
         if (rooms.isEmpty()) {
             return ResponseEntity.ok().body(new ApiResponse(true, "There are no rooms", null, null));
         } else {
@@ -126,10 +130,10 @@ public class RoomController {
     @GetMapping("/{id}/days")
     @Secured("USER")
     public ResponseEntity<ApiResponse> getRoomDaysScheduleById(@PathVariable(name = "id") int id, @Valid @RequestBody Pagination pagination) {
-        List<Day> days = roomService.getAvailableDaysInRoom(id, pagination);
+        Page<Day> days = new PageImpl<>(roomService.getAvailableDaysInRoom(id, pagination), PageRequest.of(pagination.getPage(), pagination.getSize()), 100);
         Map<String, Object> data = new HashMap<>() {{
-            put("days", days);
-            put("pagination", pagination);
+            put("days", days.getContent());
+            put("pagination", MyPageable.build(days));
         }};
         return ResponseEntity.ok().body(new ApiResponse(true, "Days schedule successfully generated", data, null));
     }

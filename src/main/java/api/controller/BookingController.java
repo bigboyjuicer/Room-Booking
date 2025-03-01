@@ -4,6 +4,8 @@ import api.dto.delete.BookingDeleteDto;
 import api.dto.post.BookingCreateDto;
 import api.dto.get.Schedule;
 import api.entity.Booking;
+import api.entity.User;
+import api.security.MyUserDetails;
 import api.service.BookingService;
 import api.util.ApiResponse;
 import api.util.mapper.UserMapper;
@@ -12,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.*;
@@ -42,13 +45,20 @@ public class BookingController {
     @Operation(summary = "Create booking for a room")
     @PostMapping
     @Secured("USER")
-    public ResponseEntity<ApiResponse> addBooking(@RequestBody BookingCreateDto booking) {
-        Booking newBooking = bookingService.saveBooking(booking);
-        Schedule schedule = new Schedule(newBooking.getTime(), "booked", UserMapper.MAPPER.fromUser(newBooking.getUser()), newBooking.getUser().getDepartment().getShortName());
+    public ResponseEntity<ApiResponse> addBooking(@RequestBody BookingCreateDto booking, Authentication authentication) {
+        User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
+        Booking newBooking = bookingService.saveBooking(booking, user);
+        Schedule schedule = new Schedule(
+                newBooking.getTime(),
+                "booked",
+                UserMapper.MAPPER.fromUser(newBooking.getUser()),
+                newBooking.getUser().getDepartment() == null ? null : newBooking.getUser().getDepartment().getName());
 
-        return new ResponseEntity<>(new ApiResponse(true, "Booking successfully added", new HashMap<>() {{
-            put("booking", schedule);
-        }}, null), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ApiResponse(
+                true,
+                "Booking successfully added",
+                new HashMap<>() {{ put("booking", schedule); }},
+                null), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Delete booking from room")
