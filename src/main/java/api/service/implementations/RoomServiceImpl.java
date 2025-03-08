@@ -8,14 +8,11 @@ import api.service.RoomService;
 import api.util.Images;
 import api.util.exception.RoomNotFoundException;
 import api.repository.RoomRepository;
-import org.hibernate.query.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,8 +23,6 @@ import java.util.*;
 @Service
 @Transactional
 public class RoomServiceImpl implements RoomService {
-
-    private final String UPLOAD_DIR = "src/main/resources/static/images/";
 
     private final RoomRepository roomRepository;
     private final BookingService bookingService;
@@ -58,7 +53,7 @@ public class RoomServiceImpl implements RoomService {
         if (roomRepository.findById(id).isPresent()) {
             return roomRepository.findById(id).get();
         } else {
-            throw new RoomNotFoundException("Room with this id not found");
+            throw new RoomNotFoundException("Room with this id not found", id);
         }
     }
 
@@ -75,13 +70,8 @@ public class RoomServiceImpl implements RoomService {
             Room room = optionalRoom.get();
             return makeDayList(room, pagination);
         } else {
-            throw new RoomNotFoundException("Room with this id not found");
+            throw new RoomNotFoundException("Room with this id not found", id);
         }
-    }
-
-    private int getDayOfWeek() {
-        LocalDate today = LocalDate.now();
-        return today.getDayOfWeek().getValue();
     }
 
     private List<Day> makeDayList(Room room, Pagination pagination) {
@@ -116,7 +106,7 @@ public class RoomServiceImpl implements RoomService {
             roomRepository.save(room);
             return Paths.get(room.getImagePath()).normalize();
         } else {
-            throw new RoomNotFoundException("Room with this id not found");
+            throw new RoomNotFoundException("Room with this id not found", id);
         }
     }
 
@@ -127,7 +117,7 @@ public class RoomServiceImpl implements RoomService {
             room.setImagePath(existingRoom.getImagePath());
             return roomRepository.save(room);
         } else {
-            throw new RoomNotFoundException("Room with this id not found");
+            throw new RoomNotFoundException("Room with this id not found", room.getId());
         }
     }
 
@@ -139,7 +129,7 @@ public class RoomServiceImpl implements RoomService {
             }
             roomRepository.deleteById(id);
         } else {
-            throw new RoomNotFoundException("Room with this id not found");
+            throw new RoomNotFoundException("Room with this id not found", id);
         }
     }
 }

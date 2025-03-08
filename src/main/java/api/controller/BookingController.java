@@ -8,8 +8,11 @@ import api.entity.User;
 import api.security.MyUserDetails;
 import api.service.BookingService;
 import api.util.ApiResponse;
+import api.util.mapper.UserInfoMapper;
 import api.util.mapper.UserMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,7 @@ import java.util.List;
 @RequestMapping("/bookings")
 public class BookingController {
 
+    private static final Logger log = LoggerFactory.getLogger(BookingController.class);
     private final BookingService bookingService;
 
     public BookingController(BookingService bookingService) {
@@ -36,6 +40,7 @@ public class BookingController {
     @Secured("USER")
     public ResponseEntity<ApiResponse> getScheduleForRoom(@PathVariable int id, @PathVariable @DateTimeFormat(pattern = "dd.MM.yyyy") LocalDate date) {
         List<Schedule> schedule = bookingService.getBookingsByRoomIdAndDate(id, date);
+        log.info("Got schedule for booking for the room with id: {} and date: {}", id, date);
         return ResponseEntity.ok().body(new ApiResponse(false, "All bookings successfully found",
                 new HashMap<>() {{
                     put("bookings", schedule);
@@ -48,10 +53,11 @@ public class BookingController {
     public ResponseEntity<ApiResponse> addBooking(@RequestBody BookingCreateDto booking, Authentication authentication) {
         User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
         Booking newBooking = bookingService.saveBooking(booking, user);
+        log.info("Booking added successfully: {}", newBooking);
         Schedule schedule = new Schedule(
                 newBooking.getTime(),
                 "booked",
-                UserMapper.MAPPER.fromUser(newBooking.getUser()),
+                UserInfoMapper.MAPPER.fromUser(newBooking.getUser()),
                 newBooking.getUser().getDepartment() == null ? null : newBooking.getUser().getDepartment().getName());
 
         return new ResponseEntity<>(new ApiResponse(
@@ -66,6 +72,7 @@ public class BookingController {
     @Secured("USER")
     public ResponseEntity<ApiResponse> deleteBooking(@RequestBody BookingDeleteDto deleteDto) {
         bookingService.deleteBooking(deleteDto);
+        log.info("Booking deleted successfully: {}", deleteDto);
         return ResponseEntity.ok().body(new ApiResponse(true, "Booking successfully deleted", null, null));
     }
 

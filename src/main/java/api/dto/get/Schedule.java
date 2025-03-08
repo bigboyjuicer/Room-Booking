@@ -11,10 +11,10 @@ public class Schedule {
     @JsonFormat(pattern = "dd.MM.yyyy HH:mm:ss")
     private LocalDateTime time;
     private String status;
-    private UserProfileDto user;
+    private UserInfoDto user;
     private String department;
 
-    public Schedule(LocalDateTime time, String status, UserProfileDto user, String department) {
+    public Schedule(LocalDateTime time, String status, UserInfoDto user, String department) {
         this.time = time;
         this.status = status;
         this.user = user;
@@ -37,11 +37,11 @@ public class Schedule {
         this.status = status;
     }
 
-    public UserProfileDto getUser() {
+    public UserInfoDto getUser() {
         return user;
     }
 
-    public void setUser(UserProfileDto user) {
+    public void setUser(UserInfoDto user) {
         this.user = user;
     }
 
