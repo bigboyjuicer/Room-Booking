@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.print.Pageable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,11 +30,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BookingService bookingService;
     private final PasswordEncoder passwordEncoder;
+    private final Images images;
 
-    public UserServiceImpl(UserRepository userRepository, BookingService bookingService, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, BookingService bookingService, PasswordEncoder passwordEncoder, Images images) {
         this.userRepository = userRepository;
         this.bookingService = bookingService;
         this.passwordEncoder = passwordEncoder;
+        this.images = images;
     }
 
     @Override
@@ -78,7 +79,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Path updateImage(User user, MultipartFile image) throws IOException {
-        String newPath = Images.saveImage(image);
+        String newPath = images.saveImage(image);
         if(user.getImage() != null) {
             Files.deleteIfExists(Paths.get(user.getImage()));
         }

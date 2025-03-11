@@ -26,10 +26,12 @@ public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
     private final BookingService bookingService;
+    private final Images images;
 
-    public RoomServiceImpl(RoomRepository roomRepository, BookingService bookingService) {
+    public RoomServiceImpl(RoomRepository roomRepository, BookingService bookingService, Images images) {
         this.roomRepository = roomRepository;
         this.bookingService = bookingService;
+        this.images = images;
     }
 
     @Override
@@ -59,7 +61,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Room saveRoom(Room room, MultipartFile image) throws IOException {
-        String imagePath = Images.saveImage(image);
+        String imagePath = images.saveImage(image);
         room.setImagePath(imagePath);
         return roomRepository.save(room);
     }
@@ -98,7 +100,7 @@ public class RoomServiceImpl implements RoomService {
     public Path updateRoomImage(MultipartFile image, int id) throws IOException {
         if (roomRepository.findById(id).isPresent()) {
             Room room = roomRepository.findById(id).get();
-            String newPath = Images.saveImage(image);
+            String newPath = images.saveImage(image);
             if(room.getImagePath() != null) {
                 Files.deleteIfExists(Paths.get(room.getImagePath()));
             }
