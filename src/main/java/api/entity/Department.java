@@ -32,9 +32,9 @@ public class Department {
     @Column(name = "color")
     private String color;
 
-    @JsonManagedReference
+    /*@JsonManagedReference
     @OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
-    List<User> users;
+    List<User> users;*/
 
     public int getId() {
         return id;
@@ -66,14 +66,6 @@ public class Department {
 
     public void setColor(@NotNull(message = "Cannot be null") @NotEmpty(message = "Cannot be empty") String color) {
         this.color = color;
-    }
-
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
     }
 
     @Override

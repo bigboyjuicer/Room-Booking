@@ -2,7 +2,6 @@ package api.dto.get;
 
 import api.entity.Department;
 import api.entity.User;
-import java.util.List;
 
 public class UserProfileDto {
 
