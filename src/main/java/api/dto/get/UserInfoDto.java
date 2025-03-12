@@ -5,6 +5,7 @@ public class UserInfoDto {
     private String email;
     private String firstName;
     private String lastName;
+    private String image;
 
     public String getEmail() {
         return email;
@@ -28,5 +29,13 @@ public class UserInfoDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

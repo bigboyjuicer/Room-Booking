@@ -13,6 +13,8 @@ public class UserProfileDto {
 
     private Department department;
 
+    private String image;
+
     private User.Theme theme;
 
     public String getEmail() {
@@ -45,6 +47,14 @@ public class UserProfileDto {
 
     public void setDepartment(Department department) {
         this.department = department;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public User.Theme getTheme() {

@@ -7,8 +7,10 @@ import api.dto.put.UserUpdateDto;
 import api.entity.Booking;
 import api.entity.User;
 import api.security.MyUserDetails;
+import api.service.BookingService;
 import api.service.UserService;
 import api.util.ApiResponse;
+import api.util.Images;
 import api.util.MyPageable;
 import api.util.exception.WrongPasswordException;
 import api.util.mapper.BookingProfileMapper;
@@ -40,9 +42,11 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final Images images;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, Images images) {
         this.userService = userService;
+        this.images = images;
     }
 
     @GetMapping("/users")
@@ -79,26 +83,22 @@ public class UserController {
         }}, null));
     }
 
-    @Operation(summary = "Get current user image")
-    @GetMapping("/me/image")
+    @Operation(summary = "Get user image by image path")
+    @GetMapping("/user/image/{imagePath}")
     @Secured("USER")
-    public ResponseEntity<Resource> getCurrentUserImage(Authentication authentication) {
-        User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
-        if(user.getImage() != null) {
-            Path filePath = Paths.get(user.getImage()).normalize();
-            Resource resource;
+    public ResponseEntity<Resource> getUserImage(@PathVariable String imagePath) {
+        String uploadDir = images.getUploadDir();
+        Path filePath = Paths.get(uploadDir + imagePath).normalize();
+        Resource resource;
 
-            try {
-                resource = new UrlResource(filePath.toUri());
-            } catch (MalformedURLException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
+        try {
+            resource = new UrlResource(filePath.toUri());
+        } catch (MalformedURLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
 
-            if (resource.exists() || resource.isReadable()) {
-                return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(resource);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
+        if (resource.exists() || resource.isReadable()) {
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(resource);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -107,12 +107,14 @@ public class UserController {
     @Operation(summary = "Update current user image")
     @PutMapping("/me/image")
     @Secured("USER")
-    public ResponseEntity<Resource> updateImage(Authentication authentication, MultipartFile image) {
+    public ResponseEntity<ApiResponse> updateImage(Authentication authentication, MultipartFile image) {
         User user = ((MyUserDetails) authentication.getPrincipal()).getUser();
 
         try {
-            userService.updateImage(user, image);
-            return getCurrentUserImage(authentication);
+            String newImagePath = userService.updateImage(user, image);
+            return ResponseEntity.ok(new ApiResponse(true, "Image successfully updated", new HashMap<>() {{
+                put("image", newImagePath);
+            }}, null));
         } catch (IOException ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -152,7 +154,7 @@ public class UserController {
     }
 
     @Operation(summary = "Delete current user")
-    @DeleteMapping("/me/delete")
+    @DeleteMapping("/me")
     @Secured("USER")
     public ResponseEntity<ApiResponse> deleteUser(Authentication authentication) {
         User currentUser = ((MyUserDetails) authentication.getPrincipal()).getUser();

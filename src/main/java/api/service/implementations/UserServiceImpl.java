@@ -78,14 +78,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Path updateImage(User user, MultipartFile image) throws IOException {
+    public String updateImage(User user, MultipartFile image) throws IOException {
+        String uploadDir = images.getUploadDir();
         String newPath = images.saveImage(image);
         if(user.getImage() != null) {
-            Files.deleteIfExists(Paths.get(user.getImage()));
+            Files.deleteIfExists(Paths.get(uploadDir + user.getImage()));
         }
         user.setImage(newPath);
         userRepository.save(user);
-        return Paths.get(user.getImage()).normalize();
+        return newPath;
     }
 
     @Override

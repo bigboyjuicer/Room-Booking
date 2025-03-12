@@ -24,7 +24,10 @@ public class Images {
         File targetFile = new File(uploadPath.toFile(), fileName);
         image.transferTo(targetFile.getAbsoluteFile());
 
-        return uploadDir + fileName;
+        return fileName;
     }
 
+    public String getUploadDir() {
+        return uploadDir;
+    }
 }

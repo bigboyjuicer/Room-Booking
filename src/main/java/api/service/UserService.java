@@ -21,7 +21,7 @@ public interface UserService {
 
     void changePassword(User user, String oldPassword, String newPassword);
 
-    Path updateImage(User user, MultipartFile image) throws IOException;
+    String updateImage(User user, MultipartFile image) throws IOException;
 
     void deleteUser(String email);
 }
