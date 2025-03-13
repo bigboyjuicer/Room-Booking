@@ -23,8 +23,11 @@ public class JWTServiceImpl implements JWTService {
 
     private final RefreshTokenService refreshTokenService;
 
-    @Value("${JWT_SECRET_KEY}")
-    private final String secretKey;
+    @Value("${JWT_ACCESS_SECRET_KEY}")
+    private final String accessSecretKey;
+
+    @Value("${JWT_REFRESH_SECRET_KEY}")
+    private final String refreshSecretKey;
 
     @Value("${JWT_ACCESS_EXPIRATION}")
     private final long accessExpiration;
@@ -34,19 +37,20 @@ public class JWTServiceImpl implements JWTService {
 
     public JWTServiceImpl(RefreshTokenService refreshTokenService) {
         this.refreshTokenService = refreshTokenService;
-        this.secretKey = "default";
+        this.accessSecretKey = "default";
+        this.refreshSecretKey = "default";
         this.accessExpiration = 0;
         this.refreshExpiration = 0;
     }
 
     @Override
-    public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public String extractEmail(String token, String type) {
+        return extractClaim(token, type, Claims::getSubject);
     }
 
     @Override
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        Claims claims = extractAllClaims(token);
+    public <T> T extractClaim(String token, String type, Function<Claims, T> claimsResolver) {
+        Claims claims = extractAllClaims(token, type);
         return claimsResolver.apply(claims);
     }
 
@@ -57,7 +61,7 @@ public class JWTServiceImpl implements JWTService {
 
     @Override
     public String generateAccessToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, accessExpiration);
+        return buildToken(extraClaims, userDetails, accessExpiration, "Access");
     }
 
     @Override
@@ -67,7 +71,7 @@ public class JWTServiceImpl implements JWTService {
 
     @Override
     public String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        String token = buildToken(extraClaims, userDetails, refreshExpiration);
+        String token = buildToken(extraClaims, userDetails, refreshExpiration, "Refresh");
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setEmail(userDetails.getUsername());
         refreshToken.setRefreshToken(token);
@@ -78,51 +82,51 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expirationTime) {
+    public String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expirationTime, String type) {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .signWith(getSignInKey(type.equals("Access") ? accessSecretKey : refreshSecretKey), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     @Override
     public boolean isAccessTokenValid(String token, UserDetails userDetails) {
-        String username = extractEmail(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        String username = extractEmail(token, "Access");
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token, "Access"));
     }
 
     @Override
     public boolean isRefreshTokenValid(String token, UserDetails userDetails) {
         RefreshToken refreshToken = refreshTokenService.findByEmail(userDetails.getUsername());
-        return (refreshToken.getRefreshToken().equals(token) && !isTokenExpired(token));
+        return (refreshToken.getRefreshToken().equals(token) && !isTokenExpired(token, "Refresh"));
     }
 
     @Override
-    public boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public boolean isTokenExpired(String token, String type) {
+        return extractExpiration(token, type).before(new Date());
     }
 
     @Override
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    public Date extractExpiration(String token, String type) {
+        return extractClaim(token, type, Claims::getExpiration);
     }
 
     @Override
-    public Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token, String type) {
         return Jwts
                 .parserBuilder()
-                .setSigningKey(getSignInKey())
+                .setSigningKey(getSignInKey(type.equals("Access") ? accessSecretKey : refreshSecretKey))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
 
     @Override
-    public SecretKey getSignInKey() {
+    public SecretKey getSignInKey(String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }

@@ -10,9 +10,9 @@ import java.util.function.Function;
 
 public interface JWTService {
 
-    String extractEmail(String token);
+    String extractEmail(String token, String type);
 
-    <T> T extractClaim(String token, Function<Claims, T> claimsResolver);
+    <T> T extractClaim(String token, String type, Function<Claims, T> claimsResolver);
 
     String generateAccessToken(UserDetails userDetails);
 
@@ -22,17 +22,17 @@ public interface JWTService {
 
     String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails);
 
-    String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expirationTime);
+    String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expirationTime, String type);
 
     boolean isAccessTokenValid(String token, UserDetails userDetails);
 
     boolean isRefreshTokenValid(String token, UserDetails userDetails);
 
-    boolean isTokenExpired(String token);
+    boolean isTokenExpired(String token, String type);
 
-    Date extractExpiration(String token);
+    Date extractExpiration(String token, String type);
 
-    Claims extractAllClaims(String token);
+    Claims extractAllClaims(String token, String type);
 
-    SecretKey getSignInKey();
+    SecretKey getSignInKey(String secretKey);
 }

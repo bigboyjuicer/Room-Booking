@@ -15,8 +15,6 @@ import api.util.mapper.UserMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -67,7 +65,7 @@ public class AuthenticationController {
     public ResponseEntity<ApiResponse> refresh(HttpServletRequest request) {
         String refreshToken = request.getHeader("Refresh-Token");
         if(refreshToken != null) {
-            String userEmail = jwtService.extractEmail(refreshToken);
+            String userEmail = jwtService.extractEmail(refreshToken, "Refresh");
             if(userEmail != null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
                 if(jwtService.isRefreshTokenValid(refreshToken, userDetails)) {

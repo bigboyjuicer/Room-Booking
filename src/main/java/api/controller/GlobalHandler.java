@@ -3,7 +3,6 @@ package api.controller;
 import api.util.ApiResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import io.jsonwebtoken.security.SignatureException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +31,11 @@ public class GlobalHandler {
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<ApiResponse> handleExpiredJwtException(ExpiredJwtException ex) {
         return new ResponseEntity<>(new ApiResponse(false, "JWT is expired", null, null), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<ApiResponse> handleSignatureException(SignatureException ex) {
+        return new ResponseEntity<>(new ApiResponse(false, "Wrong JWT signature", null, null), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
