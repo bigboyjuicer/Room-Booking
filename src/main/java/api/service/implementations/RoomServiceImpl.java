@@ -1,0 +1,137 @@
+package api.service.implementations;
+
+import api.dto.get.Day;
+import api.dto.get.Pagination;
+import api.entity.Room;
+import api.service.BookingService;
+import api.service.RoomService;
+import api.util.Images;
+import api.util.exception.RoomNotFoundException;
+import api.repository.RoomRepository;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.util.*;
+
+@Service
+@Transactional
+public class RoomServiceImpl implements RoomService {
+
+    private final RoomRepository roomRepository;
+    private final BookingService bookingService;
+    private final Images images;
+
+    public RoomServiceImpl(RoomRepository roomRepository, BookingService bookingService, Images images) {
+        this.roomRepository = roomRepository;
+        this.bookingService = bookingService;
+        this.images = images;
+    }
+
+    @Override
+    public List<Room> getAllRooms(String sort) {
+        List<Room> rooms = new ArrayList<>();
+        if (sort != null && !sort.isEmpty()) {
+            switch (sort) {
+                case "capacity_asc" -> rooms = roomRepository.findAll(Sort.by(Sort.Direction.ASC, "capacity"));
+                case "capacity_desc" -> rooms = roomRepository.findAll(Sort.by(Sort.Direction.DESC, "capacity"));
+                case "name_asc" -> rooms = roomRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+                case "name_desc" -> rooms = roomRepository.findAll(Sort.by(Sort.Direction.DESC, "name"));
+            }
+        } else {
+            rooms = roomRepository.findAll();
+        }
+        return rooms;
+    }
+
+    @Override
+    public Room getRoomById(int id) {
+        if (roomRepository.findById(id).isPresent()) {
+            return roomRepository.findById(id).get();
+        } else {
+            throw new RoomNotFoundException("Room with this id not found", id);
+        }
+    }
+
+    @Override
+    public Room saveRoom(Room room, MultipartFile image) throws IOException {
+        String imagePath = images.saveImage(image);
+        room.setImagePath(imagePath);
+        return roomRepository.save(room);
+    }
+
+    public List<Day> getAvailableDaysInRoom(int id, Pagination pagination) {
+        Optional<Room> optionalRoom = roomRepository.findById(id);
+        if (optionalRoom.isPresent()) {
+            Room room = optionalRoom.get();
+            return makeDayList(room, pagination);
+        } else {
+            throw new RoomNotFoundException("Room with this id not found", id);
+        }
+    }
+
+    private List<Day> makeDayList(Room room, Pagination pagination) {
+        List<Day> days = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+
+        today = today.plusDays((long) pagination.getSize() * pagination.getPage());
+
+        int offset = today.getDayOfWeek().getValue() - 1;
+
+        for (int i = offset; i < pagination.getSize() + offset; i++) {
+            if(room.getWeekdays().get(i % 7).isActive()) {
+                long slots = bookingService.getBookingsByRoomIdAndDate(room.getId(), today).stream().filter(b -> b.getStatus().equals("available")).count();
+                days.add(new Day(today, room.getWeekdays().get(i % 7).isActive(), slots));
+            } else {
+                days.add(new Day(today, room.getWeekdays().get(i % 7).isActive()));
+            }
+            today = today.plusDays(1);
+        }
+        return days;
+    }
+
+    @Override
+    public Path updateRoomImage(MultipartFile image, int id) throws IOException {
+        if (roomRepository.findById(id).isPresent()) {
+            Room room = roomRepository.findById(id).get();
+            String newPath = images.saveImage(image);
+            if(room.getImagePath() != null) {
+                Files.deleteIfExists(Paths.get(room.getImagePath()));
+            }
+            room.setImagePath(newPath);
+            roomRepository.save(room);
+            return Paths.get(room.getImagePath()).normalize();
+        } else {
+            throw new RoomNotFoundException("Room with this id not found", id);
+        }
+    }
+
+    @Override
+    public Room updateRoom(Room room) {
+        if (roomRepository.existsById(room.getId())) {
+            Room existingRoom = roomRepository.findById(room.getId()).get();
+            room.setImagePath(existingRoom.getImagePath());
+            return roomRepository.save(room);
+        } else {
+            throw new RoomNotFoundException("Room with this id not found", room.getId());
+        }
+    }
+
+    @Override
+    public void deleteRoom(int id) throws IOException {
+        if (roomRepository.findById(id).isPresent()) {
+            if(roomRepository.findById(id).get().getImagePath() != null) {
+                Files.deleteIfExists(Paths.get(roomRepository.findById(id).get().getImagePath()));
+            }
+            roomRepository.deleteById(id);
+        } else {
+            throw new RoomNotFoundException("Room with this id not found", id);
+        }
+    }
+}
